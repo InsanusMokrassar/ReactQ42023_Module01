@@ -6,6 +6,8 @@ import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
 import { GithubRepository, DefaultGitHubAPI } from './utils/api/github_api';
 import Results from './components/Result';
 
+let didFirstLoad = false;
+
 function App() {
   const [recentSearches, onSetResentSearches] = useState<Array<string>>(
     defaultSearchHistoryWrapper.getHistory()
@@ -23,6 +25,11 @@ function App() {
     defaultSearchHistoryWrapper.add(query);
     updateRecentSearches();
     DefaultGitHubAPI.search(query).then((result) => setResults(result));
+  }
+
+  if (!didFirstLoad) {
+    didFirstLoad = true;
+    doSearch();
   }
 
   return (
