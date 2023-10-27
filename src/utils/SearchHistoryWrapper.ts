@@ -25,7 +25,8 @@ export default class SearchHistoryWrapper {
     if (this.cache.includes(query)) {
       return false;
     } else {
-      this.cache.push(query);
+      // this.cache.push(query);
+      this.cache = [query];
       this.pasteCache();
     }
     return true;

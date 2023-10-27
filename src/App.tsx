@@ -2,22 +2,27 @@ import { useState } from 'react';
 import './App.css';
 import Search from './components/Search';
 import SearchPanel from './components/SearchPanel';
-import ResentSearches from './components/RecentSearches';
 import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
+import { GithubRepository, DefaultGitHubAPI } from './utils/api/github_api';
+import Results from './components/Result';
 
 function App() {
-  const [searchState, searchStateChange] = useState('');
   const [recentSearches, onSetResentSearches] = useState<Array<string>>(
     defaultSearchHistoryWrapper.getHistory()
   );
+  const [searchState, searchStateChange] = useState(
+    recentSearches.length > 0 ? recentSearches[recentSearches.length - 1] : ''
+  );
+  const [results, setResults] = useState<Array<GithubRepository>>([]);
 
   function updateRecentSearches() {
     onSetResentSearches(defaultSearchHistoryWrapper.getHistory());
   }
 
-  function doSearch(query: string) {
+  function doSearch(query: string = searchState) {
     defaultSearchHistoryWrapper.add(query);
     updateRecentSearches();
+    DefaultGitHubAPI.search(query).then((result) => setResults(result));
   }
 
   return (
@@ -25,14 +30,11 @@ function App() {
       <div className="main_container">
         <div></div>
         <div className="main_content">
-          <SearchPanel onSubmit={() => doSearch(searchState)}>
+          <SearchPanel onSubmit={() => doSearch()}>
             <Search state={searchState} onChange={searchStateChange} />
           </SearchPanel>
+          <Results state={results} />
         </div>
-        <ResentSearches
-          state={recentSearches}
-          onSelect={(query) => searchStateChange(query)}
-        />
       </div>
     </>
   );
