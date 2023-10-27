@@ -18,4 +18,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist
-          publish_branch: ${{ format('{0}_{1}', 'deploy', vars.GITHUB_REF_NAME) }}
+          destination_dir: ${{ vars.GITHUB_REF_NAME }}
+          publish_branch: 'deploy'
