@@ -1,16 +1,19 @@
-import { Component } from 'react';
+import React, { Component, ReactNode } from 'react';
 import './App.css';
 import Search from './components/Search';
 import SearchPanel from './components/SearchPanel';
 import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
 import { GithubRepository, DefaultGitHubAPI } from './utils/api/github_api';
 import Results from './components/Result';
+import ErrorBoundary from './ErrorBoundary';
+import ErrorThrower from './ErrorThrower';
 
 export default class App extends Component {
   private recentSearches: Array<string> = [];
   private searchState: string = '';
   private results: Array<GithubRepository> = [];
   private _isMounted: boolean = false;
+  private throwError: boolean = false;
 
   private doSearch(query: string = this.searchState) {
     defaultSearchHistoryWrapper.add(query);
@@ -29,6 +32,7 @@ export default class App extends Component {
         : ''
     );
     this.doSearch(this.searchState);
+    this.state = { throwError: false };
   }
 
   private doRefresh() {
@@ -60,12 +64,32 @@ export default class App extends Component {
     this._isMounted = false;
   }
 
+  private setErrorToThrow(throwError: boolean) {
+    this.throwError = throwError;
+    if (throwError) {
+      this.doRefresh();
+    }
+  }
+
+  private ErrorLogger({}: object): ReactNode {
+    if (ErrorBoundary.LatestError === undefined) {
+      return <></>;
+    } else {
+      return (
+        <div>
+          <p>{ErrorBoundary.LatestError.name}</p>
+          <p>{ErrorBoundary.LatestError.message}</p>
+          <p>{ErrorBoundary.LatestError.stack}</p>
+        </div>
+      );
+    }
+  }
+
   render() {
-    const { searchState, results } = this;
+    const { searchState, results, throwError } = this;
     return (
-      <>
+      <ErrorBoundary fallback={() => this.ErrorLogger({})}>
         <div className="main_container">
-          <div></div>
           <div className="main_content">
             <SearchPanel onSubmit={() => this.doSearch()}>
               <Search
@@ -74,9 +98,13 @@ export default class App extends Component {
               />
             </SearchPanel>
             <Results state={results} />
+            <ErrorThrower
+              throwError={throwError}
+              onSetErrorToThrow={(toThrow) => this.setErrorToThrow(toThrow)}
+            />
           </div>
         </div>
-      </>
+      </ErrorBoundary>
     );
   }
 }
