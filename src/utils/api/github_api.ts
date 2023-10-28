@@ -13,7 +13,10 @@ export default class GitHubAPI {
     page: number = 0,
     count: number = 5
   ): Promise<Array<GithubRepository>> {
-    const tagsParams = query.trim().split(' ').join('+');
+    const tagsParams = [
+      ...query.trim().split(' '),
+      ...(query.trim().length > 0 ? [] : ['lang:typescript']),
+    ].join('+');
     const queryParams = [
       `q=${tagsParams}`,
       `page=${page}`,
