@@ -8,7 +8,11 @@ import Results from './components/Result';
 import ErrorBoundary from './ErrorBoundary';
 import ErrorThrower from './ErrorThrower';
 
-export default class App extends Component {
+type AppState = {
+  isLoading: boolean;
+};
+
+export default class App extends Component<object, AppState> {
   private recentSearches: Array<string> = [];
   private searchState: string = '';
   private results: Array<GithubRepository> = [];
@@ -16,9 +20,13 @@ export default class App extends Component {
   private throwError: boolean = false;
 
   private doSearch(query: string = this.searchState) {
+    this.setState({ isLoading: true });
     defaultSearchHistoryWrapper.add(query);
     this.updateRecentSearches();
-    DefaultGitHubAPI.search(query).then((result) => this.setResults(result));
+    DefaultGitHubAPI.search(query).then((result) => {
+      this.setResults(result);
+      this.setState({ isLoading: false });
+    });
   }
 
   constructor(params: object = {}) {
@@ -32,7 +40,7 @@ export default class App extends Component {
         : ''
     );
     this.doSearch(this.searchState);
-    this.state = { throwError: false };
+    this.state = { isLoading: false };
   }
 
   private doRefresh() {
@@ -87,6 +95,8 @@ export default class App extends Component {
 
   render() {
     const { searchState, results, throwError } = this;
+    const { isLoading } = this.state;
+    const loadingInfoNode = isLoading ? <div>Loading</div> : <></>;
     return (
       <ErrorBoundary fallback={() => this.ErrorLogger({})}>
         <div className="main_container">
@@ -97,6 +107,7 @@ export default class App extends Component {
                 onChange={(newState) => this.searchStateChange(newState)}
               />
             </SearchPanel>
+            {loadingInfoNode}
             <Results state={results} />
             <ErrorThrower
               throwError={throwError}
