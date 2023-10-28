@@ -1,0 +1,9 @@
+.main_container {
+  display: grid;
+  grid-template-columns: 1fr 1080px 1fr;
+}
+
+.main_content {
+  width: 1080px;
+  text-align: center;
+}
