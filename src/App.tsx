@@ -24,6 +24,7 @@ export default function App({
   const [results, setResults] = useState<Array<GithubRepository>>([]);
   const [throwError, setThrowError] = useState<boolean>(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   function doSearch() {
     setIsLoading(true);
     defaultSearchHistoryWrapper.add(searchState);
