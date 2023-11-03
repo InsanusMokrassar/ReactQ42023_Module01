@@ -36,5 +36,8 @@
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --fix",
     "*.{css,scss}": "prettier --write"
+  },
+  "dependencies": {
+    "react-router-dom": "^6.18.0"
   }
 }
