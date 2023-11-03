@@ -1,23 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import './index.css';
-import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import MainComponent from './MainComponent';
 
-function getInitialSearchState(): string {
-  const history = defaultSearchHistoryWrapper.getHistory();
-
-  if (history.length > 0) {
-    return history[history.length - 1];
-  }
-
-  return '';
-}
-
-const initialSearchState = getInitialSearchState();
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <MainComponent />,
+  },
+]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <App initialSearchState={initialSearchState} />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );

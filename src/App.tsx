@@ -11,8 +11,13 @@ import ErrorLogger from './components/ErrorLogger';
 
 export default function App({
   initialSearchState,
+  page,
+  count,
 }: {
   initialSearchState: string;
+  page: number;
+  count: number;
+  onSetPageAndCount: (page: number, count: number) => void;
 }): ReactNode {
   const [isLoading, setIsLoading] = useState(true);
   const [searchState, setSearchState] = useState(initialSearchState);
@@ -22,7 +27,7 @@ export default function App({
   function doSearch() {
     setIsLoading(true);
     defaultSearchHistoryWrapper.add(searchState);
-    DefaultGitHubAPI.search(searchState).then((result) => {
+    DefaultGitHubAPI.search(searchState, page, count).then((result) => {
       setResults(result);
       setIsLoading(false);
     });
