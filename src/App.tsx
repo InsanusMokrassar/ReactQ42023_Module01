@@ -14,6 +14,7 @@ import ErrorBoundary from './ErrorBoundary';
 import ErrorThrower from './ErrorThrower';
 import ErrorLogger from './components/ErrorLogger';
 import Navigation from './components/Navigation';
+import GithubRepositoryInfo from './components/GithubRepositoryInfo';
 
 export default function App({
   initialSearchState,
@@ -35,6 +36,9 @@ export default function App({
   );
   const [wholeCountOfItems, setWholeCountOfItems] = useState<
     number | undefined
+  >(undefined);
+  const [currentlyShownObject, setCurrentlyShownObject] = useState<
+    GithubRepository | undefined
   >(undefined);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -101,7 +105,14 @@ export default function App({
           </SearchPanel>
           {errorInfoNode}
           {loadingInfoNode}
-          <Results state={results} />
+          <div className={'main_content-results'}>
+            <Results state={results} onItemClicked={setCurrentlyShownObject} />
+            {currentlyShownObject ? (
+              <GithubRepositoryInfo info={currentlyShownObject} />
+            ) : (
+              <></>
+            )}
+          </div>
           <ErrorThrower
             throwError={throwError}
             onSetErrorToThrow={resetError}

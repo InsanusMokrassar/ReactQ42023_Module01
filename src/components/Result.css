@@ -1,0 +1,23 @@
+.github_repository_results_container {
+}
+.github_repository_result_container {
+  margin: 8px;
+  border-radius: 5px;
+  border-width: 1px;
+  border-style: solid;
+}
+.github_repository_result_container:hover {
+  cursor: pointer;
+}
+
+@media (prefers-color-scheme: light) {
+  .github_repository_result_container {
+    border-color: black;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .github_repository_result_container {
+    border-color: white;
+  }
+}
