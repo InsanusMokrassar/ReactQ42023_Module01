@@ -12,7 +12,7 @@ jobs:
         with:
           node-version: '16.x'
       - name: Set homepage to avoid absolute links error
-        run: export repo_name=`echo '{{ vars.GITHUB_REPOSITORY }}' | grep -E -o '[^/]+$'` && sed -z -r 's/\{/{\n  \"home\"\:\"/$repo_name\",/' package.json
+        run:  sed -z -r -i "s/\{/{\n  \"home\"\:\"\/$(echo {{ vars.GITHUB_REPOSITORY }} | grep -E -o '[^/]+$')\",/" package.json
       - name: Build
         run: npm i && npm run build
       - name: Publish
