@@ -24,7 +24,7 @@ export default class GitHubAPI {
     ].join('+');
     const queryParams = [
       `q=${tagsParams}`,
-      `page=${page}`,
+      `page=${page + 1}`,
       `per_page=${count}`,
     ].join('&');
     return fetch(`https://api.github.com/search/repositories?${queryParams}`)

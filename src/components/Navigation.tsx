@@ -13,6 +13,10 @@ export default function Navigation({
   wholeObjectsAmount?: number;
   onSetPage: (page: number, count: number) => void;
 }): ReactNode {
+  const maxPages = wholeObjectsAmount
+    ? Math.floor(wholeObjectsAmount / count)
+    : undefined;
+
   const toFirstPageContent =
     page > 1 ? (
       <button onClick={() => onSetPage(0, count)}>{'<<'}</button>
@@ -28,19 +32,15 @@ export default function Navigation({
     );
 
   const toNextPageContent =
-    wholeObjectsAmount && wholeObjectsAmount > page * count ? (
+    maxPages && maxPages > page ? (
       <button onClick={() => onSetPage(page + 1, count)}>{'>'}</button>
     ) : (
       <></>
     );
 
   const toLatestPageContent =
-    wholeObjectsAmount && wholeObjectsAmount > page * count + count ? (
-      <button
-        onClick={() => onSetPage(Math.floor(wholeObjectsAmount / count), count)}
-      >
-        {'>>'}
-      </button>
+    maxPages && maxPages > page + 1 ? (
+      <button onClick={() => onSetPage(maxPages, count)}>{'>>'}</button>
     ) : (
       <></>
     );

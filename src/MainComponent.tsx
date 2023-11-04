@@ -22,12 +22,18 @@ export default function MainComponent({}: object): ReactNode {
   let page = 0;
   if (pageString != null && !isNaN(parseInt(pageString))) {
     page = parseInt(pageString);
+    if (page < 0) {
+      page = 0;
+    }
   }
 
   const countString = searchParams.get('count');
   let count = 10;
   if (countString != null && !isNaN(parseInt(countString))) {
     count = parseInt(countString);
+    if (count < 1) {
+      count = 1;
+    }
   }
 
   return (
