@@ -11,6 +11,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16.x'
+      - name: Set homepage to avoid absolute links error
+        run: export repo_name=`echo '{{ vars.GITHUB_REPOSITORY }}' | grep -E -o '[^/]+$'` && sed -z -r 's/\{/{\n  \"home\"\:\"/$repo_name\",/' package.json
       - name: Build
         run: npm i && npm run build
       - name: Publish
