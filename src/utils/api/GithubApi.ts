@@ -1,4 +1,8 @@
+export type GithubUser = {
+  login: string;
+};
 export type GithubRepository = {
+  name: string;
   full_name: string;
   description: string;
   url: string;
@@ -6,6 +10,7 @@ export type GithubRepository = {
   watchers_count?: number;
   forks_count?: number;
   language?: string;
+  owner: GithubUser;
 };
 export type GithubResponse<T> = {
   items: Array<T>;
@@ -34,6 +39,16 @@ export default class GitHubAPI {
     return fetch(`https://api.github.com/search/repositories?${queryParams}`)
       .then<GithubResponse<GithubRepository> | GithubErrorResponse>(
         (httpResponse) => httpResponse.json()
+      )
+      .then((response) => response);
+  }
+  async get(
+    user: string,
+    repo: string
+  ): Promise<GithubRepository | GithubErrorResponse> {
+    return fetch(`https://api.github.com/repos/${user}/${repo}`)
+      .then<GithubRepository | GithubErrorResponse>((httpResponse) =>
+        httpResponse.json()
       )
       .then((response) => response);
   }

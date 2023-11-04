@@ -14,7 +14,7 @@ import ErrorBoundary from './ErrorBoundary';
 import ErrorThrower from './ErrorThrower';
 import ErrorLogger from './components/ErrorLogger';
 import Navigation from './components/Navigation';
-import GithubRepositoryInfo from './components/GithubRepositoryInfo';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 export default function App({
   initialSearchState,
@@ -36,9 +36,6 @@ export default function App({
   );
   const [wholeCountOfItems, setWholeCountOfItems] = useState<
     number | undefined
-  >(undefined);
-  const [currentlyShownObject, setCurrentlyShownObject] = useState<
-    GithubRepository | undefined
   >(undefined);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,6 +88,12 @@ export default function App({
     requestAnimationFrame(() => setThrowError(throwError));
   }
 
+  const navigate = useNavigate();
+
+  function setCurrentlyShownObject(repo: GithubRepository) {
+    navigate(`/github/${repo.owner.login}/${repo.name}`);
+  }
+
   return (
     <ErrorBoundary
       fallback={() => {
@@ -107,11 +110,7 @@ export default function App({
           {loadingInfoNode}
           <div className={'main_content-results'}>
             <Results state={results} onItemClicked={setCurrentlyShownObject} />
-            {currentlyShownObject ? (
-              <GithubRepositoryInfo info={currentlyShownObject} />
-            ) : (
-              <></>
-            )}
+            <Outlet />
           </div>
           <ErrorThrower
             throwError={throwError}
