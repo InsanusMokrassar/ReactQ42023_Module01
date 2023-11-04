@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import './RecentSearches.css';
-import { GithubRepository } from '../utils/api/github_api';
+import { GithubRepository } from '../utils/api/GithubApi';
 
 export function Result({ state }: { state: GithubRepository }): ReactNode {
   return (
