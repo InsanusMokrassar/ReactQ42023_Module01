@@ -52,7 +52,7 @@ export default function Navigation({
       <span>
         <select
           value={count}
-          onChange={(event) => onSetPage(page, parseInt(event.target.value))}
+          onChange={(event) => onSetPage(0, parseInt(event.target.value))}
         >
           {navigationCountsVariants.map((variant) => (
             <option key={variant} value={variant}>
