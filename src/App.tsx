@@ -14,7 +14,7 @@ import ErrorBoundary from './ErrorBoundary';
 import ErrorThrower from './ErrorThrower';
 import ErrorLogger from './components/ErrorLogger';
 import Navigation from './components/Navigation';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
 export default function App({
   initialSearchState,
@@ -89,9 +89,13 @@ export default function App({
   }
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   function setCurrentlyShownObject(repo: GithubRepository) {
-    navigate(`/github/${repo.owner.login}/${repo.name}`);
+    navigate({
+      pathname: `/github/${repo.owner.login}/${repo.name}`,
+      search: location.search,
+    });
   }
 
   return (

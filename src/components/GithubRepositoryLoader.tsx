@@ -1,5 +1,5 @@
 import { ReactNode, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   DefaultGitHubAPI,
   GithubErrorResponse,
@@ -21,9 +21,10 @@ export default function GithubRepositoryLoader(): ReactNode {
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
   function unsetCurrentlyShownObject() {
-    navigate('/');
+    navigate({ pathname: '/', search: location.search });
   }
 
   const outletRef: React.RefObject<HTMLDivElement> =
