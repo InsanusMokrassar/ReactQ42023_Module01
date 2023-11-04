@@ -19,6 +19,23 @@ export default function GithubRepositoryLoader(): ReactNode {
   const [error, setError] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  if (username === undefined) {
+    return (
+      <span>
+        Unable to show info about the repo when username is not available
+      </span>
+    );
+  }
+
+  if (repo === undefined) {
+    return (
+      <span>
+        Unable to show info about the repo of user {username} when repo is not
+        available
+      </span>
+    );
+  }
+
   const usernameRepo = `${username}/${repo}`;
   if (didRequestFor != usernameRepo) {
     setDidRequestFor(usernameRepo);
