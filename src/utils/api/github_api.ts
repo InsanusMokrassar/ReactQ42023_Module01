@@ -5,6 +5,11 @@ export type GithubRepository = {
 };
 export type GithubResponse<T> = {
   items: Array<T>;
+  total_count: number;
+};
+export type GithubErrorResponse = {
+  message: string;
+  documentation_url?: string;
 };
 
 export default class GitHubAPI {
@@ -12,7 +17,7 @@ export default class GitHubAPI {
     query: string,
     page: number = 0,
     count: number = 5
-  ): Promise<Array<GithubRepository>> {
+  ): Promise<GithubResponse<GithubRepository> | GithubErrorResponse> {
     const tagsParams = [
       ...query.trim().split(' '),
       ...(query.trim().length > 0 ? [] : ['lang:typescript']),
@@ -23,8 +28,10 @@ export default class GitHubAPI {
       `per_page=${count}`,
     ].join('&');
     return fetch(`https://api.github.com/search/repositories?${queryParams}`)
-      .then<GithubResponse<GithubRepository>>((response) => response.json())
-      .then((response) => response.items);
+      .then<GithubResponse<GithubRepository> | GithubErrorResponse>(
+        (httpResponse) => httpResponse.json()
+      )
+      .then((response) => response);
   }
 }
 

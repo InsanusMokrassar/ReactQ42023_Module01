@@ -25,7 +25,7 @@ export default function MainComponent({}: object): ReactNode {
   }
 
   const countString = searchParams.get('count');
-  let count = 0;
+  let count = 10;
   if (countString != null && !isNaN(parseInt(countString))) {
     count = parseInt(countString);
   }
