@@ -4,11 +4,13 @@ import './GithubRepositoryInfo.css';
 
 export default function GithubRepositoryInfo({
   info,
+  outletRef,
 }: {
   info: GithubRepository;
+  outletRef: React.RefObject<HTMLDivElement>;
 }): ReactNode {
   return (
-    <div className={'github_repository_info'}>
+    <div className={'github_repository_info'} ref={outletRef}>
       <h3>{info.full_name}</h3>
       <div>{info.description}</div>
       <div>{info.url}</div>

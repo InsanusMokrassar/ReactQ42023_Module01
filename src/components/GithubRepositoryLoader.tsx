@@ -1,11 +1,12 @@
-import { ReactNode, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { ReactNode, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   DefaultGitHubAPI,
   GithubErrorResponse,
   GithubRepository,
 } from '../utils/api/GithubApi';
 import GithubRepositoryInfo from './GithubRepositoryInfo';
+import useOnClickOutside from '../utils/UseOnClickOutside';
 
 export default function GithubRepositoryLoader(): ReactNode {
   const { username, repo } = useParams<{ username: string; repo: string }>();
@@ -18,6 +19,18 @@ export default function GithubRepositoryLoader(): ReactNode {
   );
   const [error, setError] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const navigate = useNavigate();
+
+  function unsetCurrentlyShownObject() {
+    navigate('/');
+  }
+
+  const outletRef: React.RefObject<HTMLDivElement> =
+    useRef<HTMLDivElement>(null);
+  useOnClickOutside(outletRef, () => {
+    unsetCurrentlyShownObject();
+  });
 
   if (username === undefined) {
     return (
@@ -55,16 +68,24 @@ export default function GithubRepositoryLoader(): ReactNode {
   }
 
   return (
-    <>
+    <div>
       {error ? (
-        <div>
+        <div ref={outletRef}>
           Error in loading of repo {`${username}/${repo}`}: {`"${error}"`}
         </div>
       ) : (
         <></>
       )}
-      {githubRepo ? <GithubRepositoryInfo info={githubRepo} /> : <></>}
-      {isLoading ? <div>Loading of {`${username}/${repo}`}</div> : <></>}
-    </>
+      {githubRepo ? (
+        <GithubRepositoryInfo info={githubRepo} outletRef={outletRef} />
+      ) : (
+        <></>
+      )}
+      {isLoading ? (
+        <div ref={outletRef}>Loading of {`${username}/${repo}`}</div>
+      ) : (
+        <></>
+      )}
+    </div>
   );
 }

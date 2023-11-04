@@ -14,7 +14,10 @@ export function Result({
     <div
       key={state.url}
       className={'github_repository_result_container'}
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation(); // prevent propagation to already opened github repo loader
+        onClick();
+      }}
     >
       <h3>{state.full_name}</h3>
       <div>{state.description}</div>
