@@ -70,6 +70,7 @@ export default function GithubRepositoryLoader(): ReactNode {
 
   return (
     <div>
+      <button onClick={unsetCurrentlyShownObject}>Close</button>
       {error ? (
         <div ref={outletRef}>
           Error in loading of repo {`${username}/${repo}`}: {`"${error}"`}
