@@ -12,7 +12,7 @@ import {
   GithubRepository,
 } from '../utils/api/GithubApi';
 import GithubRepositoryInfo from './GithubRepositoryInfo';
-import useOnClickOutside from '../utils/UseOnClickOutside';
+import { useOnClickOutside } from 'usehooks-ts';
 
 export default function GithubRepositoryLoader(): ReactNode {
   const {
