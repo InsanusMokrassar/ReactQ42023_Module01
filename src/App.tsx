@@ -1,121 +1,133 @@
-import React, { Component, ReactNode } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import './App.css';
 import Search from './components/Search';
 import SearchPanel from './components/SearchPanel';
 import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
-import { GithubRepository, DefaultGitHubAPI } from './utils/api/github_api';
+import {
+  GithubRepository,
+  DefaultGitHubAPI,
+  GithubErrorResponse,
+  GithubResponse,
+} from './utils/api/GithubApi';
 import Results from './components/Result';
 import ErrorBoundary from './ErrorBoundary';
 import ErrorThrower from './ErrorThrower';
+import ErrorLogger from './components/ErrorLogger';
+import Navigation from './components/Navigation';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 
-type AppState = {
-  isLoading: boolean;
-};
+export default function App({
+  initialSearchState,
+  page,
+  count,
+  onSetPageAndCount,
+}: {
+  initialSearchState: string;
+  page: number;
+  count: number;
+  onSetPageAndCount: (page: number, count: number) => void;
+}): ReactNode {
+  const [isLoading, setIsLoading] = useState(true);
+  const [searchState, setSearchState] = useState(initialSearchState);
+  const [results, setResults] = useState<Array<GithubRepository>>([]);
+  const [throwError, setThrowError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | undefined>(
+    undefined
+  );
+  const [wholeCountOfItems, setWholeCountOfItems] = useState<
+    number | undefined
+  >(undefined);
 
-export default class App extends Component<object, AppState> {
-  private recentSearches: Array<string> = [];
-  private searchState: string = '';
-  private results: Array<GithubRepository> = [];
-  private _isMounted: boolean = false;
-  private throwError: boolean = false;
-
-  private doSearch(query: string = this.searchState) {
-    this.setState({ isLoading: true });
-    defaultSearchHistoryWrapper.add(query);
-    this.updateRecentSearches();
-    DefaultGitHubAPI.search(query).then((result) => {
-      this.setResults(result);
-      this.setState({ isLoading: false });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  function doSearch() {
+    setIsLoading(true);
+    defaultSearchHistoryWrapper.add(searchState);
+    DefaultGitHubAPI.search(searchState, page, count).then((result) => {
+      const asError = result as GithubErrorResponse;
+      const asResult = result as GithubResponse<GithubRepository>;
+      switch (true) {
+        case asError.message != null:
+          setResults([]);
+          setErrorMessage(asError.message);
+          break;
+        default:
+          setErrorMessage(undefined);
+          setResults(asResult.items);
+          setWholeCountOfItems(asResult.total_count);
+          break;
+      }
+      setIsLoading(false);
     });
   }
 
-  constructor(params: object = {}) {
-    super(params);
-    this.updateRecentSearches();
-    this.searchStateChange(
-      this.searchState.length > 0
-        ? this.searchState
-        : this.recentSearches.length > 0
-        ? this.recentSearches[this.recentSearches.length - 1]
-        : ''
-    );
-    this.doSearch(this.searchState);
-    this.state = { isLoading: false };
-  }
+  const loadingInfoNode = isLoading ? <div>Loading</div> : <></>;
+  const errorInfoNode = errorMessage ? (
+    <label>
+      GitHub error message: {'"'}
+      {errorMessage}
+      {'"'}
+    </label>
+  ) : (
+    <></>
+  );
 
-  private doRefresh() {
-    if (this._isMounted) {
-      this.forceUpdate();
+  const [requireSearch, setRequireSearch] = useState(true);
+  useEffect((): void => {
+    if (requireSearch) {
+      setRequireSearch(false);
+      doSearch();
     }
+  }, [requireSearch, setRequireSearch, doSearch]);
+
+  const onChangePageAndCount = (page: number, count: number): void => {
+    setRequireSearch(true);
+    onSetPageAndCount(page, count);
+  };
+
+  async function resetError(throwError: boolean) {
+    requestAnimationFrame(() => setThrowError(throwError));
   }
 
-  private searchStateChange(newSearchState: string) {
-    this.searchState = newSearchState;
-    this.doRefresh();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  function setCurrentlyShownObject(repo: GithubRepository) {
+    navigate({
+      pathname: `/github/${repo.owner.login}/${repo.name}`,
+      search: location.search,
+    });
   }
 
-  private updateRecentSearches() {
-    this.recentSearches = defaultSearchHistoryWrapper.getHistory();
-    this.doRefresh();
-  }
-
-  private setResults(newResults: Array<GithubRepository>) {
-    this.results = newResults;
-    this.doRefresh();
-  }
-
-  componentDidMount() {
-    this._isMounted = true;
-  }
-
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
-  private setErrorToThrow(throwError: boolean) {
-    this.throwError = throwError;
-    if (throwError) {
-      this.doRefresh();
-    }
-  }
-
-  private ErrorLogger({}: object): ReactNode {
-    if (ErrorBoundary.LatestError === undefined) {
-      return <></>;
-    } else {
-      return (
-        <div>
-          <p>{ErrorBoundary.LatestError.name}</p>
-          <p>{ErrorBoundary.LatestError.message}</p>
-          <p>{ErrorBoundary.LatestError.stack}</p>
-        </div>
-      );
-    }
-  }
-
-  render() {
-    const { searchState, results, throwError } = this;
-    const { isLoading } = this.state;
-    const loadingInfoNode = isLoading ? <div>Loading</div> : <></>;
-    return (
-      <ErrorBoundary fallback={() => this.ErrorLogger({})}>
-        <div className="main_container">
-          <div className="main_content">
-            <SearchPanel onSubmit={() => this.doSearch()}>
-              <Search
-                state={searchState}
-                onChange={(newState) => this.searchStateChange(newState)}
-              />
-            </SearchPanel>
-            {loadingInfoNode}
-            <Results state={results} />
-            <ErrorThrower
-              throwError={throwError}
-              onSetErrorToThrow={(toThrow) => this.setErrorToThrow(toThrow)}
-            />
+  return (
+    <ErrorBoundary
+      fallback={() => {
+        resetError(false);
+        return ErrorLogger({});
+      }}
+    >
+      <div className="main_container">
+        <div className="main_content">
+          <SearchPanel onSubmit={doSearch}>
+            <Search state={searchState} onChange={setSearchState} />
+          </SearchPanel>
+          {errorInfoNode}
+          {loadingInfoNode}
+          <div className={'main_content-results'}>
+            <Results state={results} onItemClicked={setCurrentlyShownObject} />
+            <Outlet />
           </div>
+          <ErrorThrower
+            throwError={throwError}
+            onSetErrorToThrow={resetError}
+          />
+          <Navigation
+            page={page}
+            count={count}
+            wholeObjectsAmount={wholeCountOfItems}
+            onSetPage={onChangePageAndCount}
+          />
         </div>
-      </ErrorBoundary>
-    );
-  }
+      </div>
+    </ErrorBoundary>
+  );
 }

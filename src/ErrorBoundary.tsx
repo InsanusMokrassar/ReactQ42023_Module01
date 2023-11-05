@@ -27,6 +27,7 @@ export default class ErrorBoundary extends Component<
 
   componentDidCatch(error: Error) {
     ErrorBoundary.LatestError = error;
+    this.setState({ hasError: true });
   }
 
   render() {
