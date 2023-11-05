@@ -1,6 +1,5 @@
 import { GithubRepository } from '../utils/api/GithubApi';
 import React, { ReactNode } from 'react';
-import './GithubRepositoryInfo.css';
 
 export default function GithubRepositoryInfo({
   info,

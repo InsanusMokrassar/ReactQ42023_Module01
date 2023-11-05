@@ -1,5 +1,11 @@
 import { ReactNode, useRef, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import {
+  Location,
+  NavigateFunction,
+  useLocation,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
 import {
   DefaultGitHubAPI,
   GithubErrorResponse,
@@ -9,19 +15,49 @@ import GithubRepositoryInfo from './GithubRepositoryInfo';
 import useOnClickOutside from '../utils/UseOnClickOutside';
 
 export default function GithubRepositoryLoader(): ReactNode {
-  const { username, repo } = useParams<{ username: string; repo: string }>();
+  const {
+    username,
+    repo,
+  }: Readonly<
+    Partial<{ username: string | undefined; repo: string | undefined }>
+  > = useParams<{ username: string; repo: string }>();
 
-  const [didRequestFor, setDidRequestFor] = useState<string | undefined>(
-    undefined
-  );
-  const [githubRepo, setGithubRepo] = useState<GithubRepository | undefined>(
-    undefined
-  );
-  const [error, setError] = useState<string | undefined>(undefined);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [didRequestFor, setDidRequestFor]: [
+    string | undefined,
+    (
+      value:
+        | ((prevState: string | undefined) => string | undefined)
+        | string
+        | undefined
+    ) => void,
+  ] = useState<string | undefined>(undefined);
+  const [githubRepo, setGithubRepo]: [
+    GithubRepository | undefined,
+    (
+      value:
+        | ((
+            prevState: GithubRepository | undefined
+          ) => GithubRepository | undefined)
+        | GithubRepository
+        | undefined
+    ) => void,
+  ] = useState<GithubRepository | undefined>(undefined);
+  const [error, setError]: [
+    string | undefined,
+    (
+      value:
+        | ((prevState: string | undefined) => string | undefined)
+        | string
+        | undefined
+    ) => void,
+  ] = useState<string | undefined>(undefined);
+  const [isLoading, setIsLoading]: [
+    boolean,
+    (value: ((prevState: boolean) => boolean) | boolean) => void,
+  ] = useState<boolean>(false);
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate: NavigateFunction = useNavigate();
+  const location: Location = useLocation();
 
   function unsetCurrentlyShownObject() {
     navigate({ pathname: '/', search: location.search });
