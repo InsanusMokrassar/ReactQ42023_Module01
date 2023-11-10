@@ -1,7 +1,8 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useContext } from 'react';
 import './RecentSearches.css';
 import { GithubRepository } from '../utils/api/GithubApi';
 import './Result.css';
+import { AppContext, AppContextType } from '../AppContext';
 
 export function Result({
   state,
@@ -27,15 +28,14 @@ export function Result({
 }
 
 export default function Results({
-  state,
   onItemClicked,
 }: {
-  state: Array<GithubRepository>;
   onItemClicked: (repo: GithubRepository) => void;
 }): ReactNode {
+  const { results } = useContext<AppContextType>(AppContext);
   return (
     <div className={'github_repository_results_container'}>
-      {state.map((repo) => (
+      {(results?.items || []).map((repo) => (
         <Result
           key={repo.url}
           state={repo}
