@@ -9,7 +9,9 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format:fix": "prettier --write src",
     "preview": "vite preview",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
@@ -17,6 +19,7 @@
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vitejs/plugin-react": "^4.0.3",
+    "@vitest/coverage-v8": "^0.34.6",
     "eslint": "^8.52.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-import-resolver-typescript": "^3.6.1",
@@ -31,7 +34,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "vitest": "^0.34.6"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": "eslint --fix",
