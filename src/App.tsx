@@ -41,22 +41,24 @@ export default function App({
   function doSearch() {
     setIsLoading(true);
     defaultSearchHistoryWrapper().setSearch(search);
-    DefaultGitHubAPI.search(search, page, count).then((result) => {
-      const asError = result as GithubErrorResponse;
-      const asResult = result as GithubResponse<GithubRepository>;
-      switch (true) {
-        case asError.message != null:
-          setResults(undefined);
-          setErrorMessage(asError.message);
-          break;
-        default:
-          setErrorMessage(undefined);
-          setResults(asResult);
-          setWholeCountOfItems(asResult.total_count);
-          break;
-      }
-      setIsLoading(false);
-    });
+    DefaultGitHubAPI()
+      .search(search, page, count)
+      .then((result) => {
+        const asError = result as GithubErrorResponse;
+        const asResult = result as GithubResponse<GithubRepository>;
+        switch (true) {
+          case asError.message != null:
+            setResults(undefined);
+            setErrorMessage(asError.message);
+            break;
+          default:
+            setErrorMessage(undefined);
+            setResults(asResult);
+            setWholeCountOfItems(asResult.total_count);
+            break;
+        }
+        setIsLoading(false);
+      });
   }
 
   const loadingInfoNode = isLoading ? <div>Loading</div> : <></>;

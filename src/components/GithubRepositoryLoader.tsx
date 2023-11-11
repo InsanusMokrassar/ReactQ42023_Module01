@@ -92,16 +92,18 @@ export default function GithubRepositoryLoader(): ReactNode {
     setIsLoading(true);
     setError(undefined);
     setGithubRepo(undefined);
-    DefaultGitHubAPI.get(username, repo).then((result) => {
-      const asError = result as GithubErrorResponse;
-      const asRepo = result as GithubRepository;
-      if (asError.message) {
-        setError(asError.message);
-      } else {
-        setGithubRepo(asRepo);
-      }
-      setIsLoading(false);
-    });
+    DefaultGitHubAPI()
+      .get(username, repo)
+      .then((result) => {
+        const asError = result as GithubErrorResponse;
+        const asRepo = result as GithubRepository;
+        if (asError.message) {
+          setError(asError.message);
+        } else {
+          setGithubRepo(asRepo);
+        }
+        setIsLoading(false);
+      });
   }
 
   return (

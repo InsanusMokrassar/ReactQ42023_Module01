@@ -1,3 +1,5 @@
+import lazy from '../Lazy';
+
 export type GithubUser = {
   login: string;
 };
@@ -54,4 +56,7 @@ export default class GitHubAPI {
   }
 }
 
-export const DefaultGitHubAPI = new GitHubAPI();
+const LazyDefaultGitHubAPI = lazy(() => new GitHubAPI());
+export function DefaultGitHubAPI(): GitHubAPI {
+  return LazyDefaultGitHubAPI();
+}
