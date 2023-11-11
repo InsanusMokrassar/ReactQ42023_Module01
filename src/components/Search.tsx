@@ -9,6 +9,7 @@ export default function Search({
 }): ReactNode {
   return (
     <input
+      role={'SearchInput'}
       type="text"
       value={state}
       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
