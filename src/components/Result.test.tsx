@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GithubRepository, GithubResponse } from '../utils/api/GithubApi';
 import { AppContext } from '../AppContext';
@@ -27,6 +27,9 @@ describe('Result and Results tests', async () => {
     items: testData,
     total_count: testData.length,
   };
+  beforeEach(() => {
+    cleanup();
+  });
   it('Results shown correctly', async () => {
     let latestClickedRepo: GithubRepository | undefined = undefined;
     const onStateChange = (repo: GithubRepository) => {
