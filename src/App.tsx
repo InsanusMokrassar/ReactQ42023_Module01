@@ -40,7 +40,7 @@ export default function App({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   function doSearch() {
     setIsLoading(true);
-    defaultSearchHistoryWrapper.add(search);
+    defaultSearchHistoryWrapper().setSearch(search);
     DefaultGitHubAPI.search(search, page, count).then((result) => {
       const asError = result as GithubErrorResponse;
       const asResult = result as GithubResponse<GithubRepository>;

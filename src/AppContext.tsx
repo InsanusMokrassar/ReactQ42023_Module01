@@ -3,7 +3,7 @@ import { createContext } from 'react';
 import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
 
 function getInitialSearchState(): string {
-  return defaultSearchHistoryWrapper.getSearch();
+  return defaultSearchHistoryWrapper().getSearch();
 }
 
 export const initialSearchState = getInitialSearchState();
