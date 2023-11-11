@@ -1,5 +1,4 @@
 import React, { ReactNode, useContext } from 'react';
-import './RecentSearches.css';
 import { GithubRepository } from '../utils/api/GithubApi';
 import './Result.css';
 import { AppContext, AppContextType } from '../AppContext';
