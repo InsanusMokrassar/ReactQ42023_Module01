@@ -7,24 +7,27 @@ describe('Tests of GithubApi', () => {
   beforeAll(() => {
     fetchMocker.enableMocks();
   });
-  it('GithubApi#search tests', () => {
+  it('GithubApi#search tests', async () => {
     const answerForFirstPage = '{"answer": 1}';
     const answerForSecondPage = '{"answer": 2}';
-    fetchMocker.doMockOnceIf(/page=1/, () => {
-      return answerForFirstPage;
-    });
-    fetchMocker.doMockOnceIf(/page=2/, () => {
-      return answerForSecondPage;
+    fetchMocker.mockResponse((request) => {
+      switch (true) {
+        case /page=1/.test(request.url):
+          return answerForFirstPage;
+        case /page=2/.test(request.url):
+          return answerForSecondPage;
+      }
+      return '{}';
     });
 
     const githubApi = new GitHubAPI();
-    githubApi
-      .search('gg', 1)
+    await githubApi
+      .search('gg', 0)
       .then((response) =>
         expect(response).toEqual(JSON.parse(answerForFirstPage))
       );
-    githubApi
-      .search('gg', 2)
+    await githubApi
+      .search('gg', 1)
       .then((response) =>
         expect(response).toEqual(JSON.parse(answerForSecondPage))
       );

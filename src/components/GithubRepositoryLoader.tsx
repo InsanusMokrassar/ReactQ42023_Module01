@@ -107,7 +107,7 @@ export default function GithubRepositoryLoader(): ReactNode {
   }
 
   return (
-    <div>
+    <div role={`github_repository_details_loader/${username}/${repo}`}>
       <button onClick={unsetCurrentlyShownObject}>Close</button>
       {error ? (
         <div ref={outletRef}>

@@ -13,30 +13,31 @@ function FakeContainer({ info }: { info: GithubRepository }) {
   );
 }
 
+export const testGithubRepositories: Array<GithubRepository> = [];
+for (let i = 0; i < 10; i++) {
+  testGithubRepositories.push({
+    description: `d${i}`,
+    forks_count: i,
+    full_name: `fn${i}`,
+    name: `n${i}`,
+    url: `u${i}`,
+    language: `l${i}`,
+    owner: {
+      login: `o_l${i}`,
+    },
+    stargazers_count: i,
+    watchers_count: i,
+  });
+}
+
 describe('GithubRepositoryInfo', async () => {
   screen.debug();
-  const testData: Array<GithubRepository> = [];
-  for (let i = 0; i < 10; i++) {
-    testData.push({
-      description: `d${i}`,
-      forks_count: i,
-      full_name: `fn${i}`,
-      name: `n${i}`,
-      url: `u${i}`,
-      language: `l${i}`,
-      owner: {
-        login: `o_l${i}`,
-      },
-      stargazers_count: i,
-      watchers_count: i,
-    });
-  }
   beforeEach(() => {
     cleanup();
   });
   it('GithubRepositoryInfo is shown correctly', async () => {
-    for (let i = 0; i < testData.length; i++) {
-      const info = testData[i];
+    for (let i = 0; i < testGithubRepositories.length; i++) {
+      const info = testGithubRepositories[i];
       render(<FakeContainer info={info} />);
 
       const container = await screen.findByRole('github_repository_info');
