@@ -35,7 +35,7 @@ describe('GithubRepositoryInfo', async () => {
   beforeEach(() => {
     cleanup();
   });
-  it('GithubRepositoryInfo is shown correctly', async () => {
+  it('Make sure the detailed card component correctly displays the detailed card data;', async () => {
     for (let i = 0; i < testGithubRepositories.length; i++) {
       const info = testGithubRepositories[i];
       render(<FakeContainer info={info} />);
