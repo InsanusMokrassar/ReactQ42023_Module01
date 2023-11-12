@@ -15,7 +15,11 @@ export default function SearchPanel({
   return (
     <form>
       {children}
-      <input type="submit" onClick={onPreSubmit} />
+      <input
+        role={'search_panel_submit_button'}
+        type="submit"
+        onClick={onPreSubmit}
+      />
     </form>
   );
 }

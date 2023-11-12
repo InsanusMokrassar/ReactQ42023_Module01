@@ -14,6 +14,7 @@ import createFetchMock from 'vitest-fetch-mock';
 import { testGithubResponseWithGithubRepositories } from './components/Result.test';
 import userEvent from '@testing-library/user-event';
 import { GithubRepository } from './utils/api/GithubApi';
+import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
 
 describe('App and all related tests', () => {
   const fetchMocker = createFetchMock(vi);
@@ -240,6 +241,24 @@ describe('App and all related tests', () => {
     expect(
       memoryProvider.state.location.search.indexOf(`page=0`)
     ).toBeGreaterThan(-1);
+  });
+
+  it('Verify that clicking the Search button saves the entered value to the local storage;', async () => {
+    enableDefaultFetchMocker();
+    const memoryProvider = createMemoryRouter(routerConfig, {
+      initialEntries: ['/'],
+    });
+
+    render(<RouterProvider router={memoryProvider} />);
+
+    const searchButton = await screen.findByRole('search_panel_submit_button');
+    const input = await screen.findByRole('SearchInput');
+
+    await userEvent.click(input);
+    await userEvent.paste('test data');
+
+    await userEvent.click(searchButton);
+    expect(defaultSearchHistoryWrapper().getSearch()).toBe('test data');
   });
 
   afterEach(() => {
