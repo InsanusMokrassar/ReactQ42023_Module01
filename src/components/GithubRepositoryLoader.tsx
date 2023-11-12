@@ -1,4 +1,4 @@
-import { ReactNode, useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import {
   Location,
   NavigateFunction,
@@ -54,7 +54,7 @@ export default function GithubRepositoryLoader(): ReactNode {
   const [isLoading, setIsLoading]: [
     boolean,
     (value: ((prevState: boolean) => boolean) | boolean) => void,
-  ] = useState<boolean>(false);
+  ] = useState<boolean>(true);
 
   const navigate: NavigateFunction = useNavigate();
   const location: Location = useLocation();
@@ -67,6 +67,35 @@ export default function GithubRepositoryLoader(): ReactNode {
     useRef<HTMLDivElement>(null);
   useOnClickOutside(outletRef, () => {
     unsetCurrentlyShownObject();
+  });
+
+  async function doRequest(username: string, repo: string) {
+    setDidRequestFor(usernameRepo);
+    setIsLoading(true);
+    setError(undefined);
+    setGithubRepo(undefined);
+    DefaultGitHubAPI()
+      .get(username, repo)
+      .then((result) => {
+        const asError = result as GithubErrorResponse;
+        const asRepo = result as GithubRepository;
+        if (asError.message) {
+          setError(asError.message);
+        } else {
+          setGithubRepo(asRepo);
+        }
+        setIsLoading(false);
+      });
+  }
+  const usernameRepo = `${username}/${repo}`;
+  useEffect(() => {
+    if (
+      username != undefined &&
+      repo != undefined &&
+      didRequestFor != usernameRepo
+    ) {
+      doRequest(username, repo);
+    }
   });
 
   if (username === undefined) {
@@ -86,27 +115,14 @@ export default function GithubRepositoryLoader(): ReactNode {
     );
   }
 
-  const usernameRepo = `${username}/${repo}`;
-  if (didRequestFor != usernameRepo) {
-    setDidRequestFor(usernameRepo);
-    setIsLoading(true);
-    setError(undefined);
-    setGithubRepo(undefined);
-    DefaultGitHubAPI.get(username, repo).then((result) => {
-      const asError = result as GithubErrorResponse;
-      const asRepo = result as GithubRepository;
-      if (asError.message) {
-        setError(asError.message);
-      } else {
-        setGithubRepo(asRepo);
-      }
-      setIsLoading(false);
-    });
-  }
-
   return (
-    <div>
-      <button onClick={unsetCurrentlyShownObject}>Close</button>
+    <div role={`github_repository_details_loader/${username}/${repo}`}>
+      <button
+        role={'github_repository_details_loader_close'}
+        onClick={unsetCurrentlyShownObject}
+      >
+        Close
+      </button>
       {error ? (
         <div ref={outletRef}>
           Error in loading of repo {`${username}/${repo}`}: {`"${error}"`}
@@ -120,7 +136,9 @@ export default function GithubRepositoryLoader(): ReactNode {
         <></>
       )}
       {isLoading ? (
-        <div ref={outletRef}>Loading of {`${username}/${repo}`}</div>
+        <div role={'github_repository_details_loader_loading'} ref={outletRef}>
+          Loading of {`${username}/${repo}`}
+        </div>
       ) : (
         <></>
       )}

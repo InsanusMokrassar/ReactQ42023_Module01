@@ -19,28 +19,45 @@ export default function Navigation({
 
   const toFirstPageContent =
     page > 1 ? (
-      <button onClick={() => onSetPage(0, count)}>{'<<'}</button>
+      <button role={'navigation_to_first'} onClick={() => onSetPage(0, count)}>
+        {'<<'}
+      </button>
     ) : (
       <></>
     );
 
   const toPreviousPageContent =
     page > 0 ? (
-      <button onClick={() => onSetPage(page - 1, count)}>{'<'}</button>
+      <button
+        role={'navigation_to_previous'}
+        onClick={() => onSetPage(page - 1, count)}
+      >
+        {'<'}
+      </button>
     ) : (
       <></>
     );
 
   const toNextPageContent =
     maxPages && maxPages > page ? (
-      <button onClick={() => onSetPage(page + 1, count)}>{'>'}</button>
+      <button
+        role={'navigation_to_next'}
+        onClick={() => onSetPage(page + 1, count)}
+      >
+        {'>'}
+      </button>
     ) : (
       <></>
     );
 
   const toLatestPageContent =
     maxPages && maxPages > page + 1 ? (
-      <button onClick={() => onSetPage(maxPages, count)}>{'>>'}</button>
+      <button
+        role={'navigation_to_last'}
+        onClick={() => onSetPage(maxPages, count)}
+      >
+        {'>>'}
+      </button>
     ) : (
       <></>
     );

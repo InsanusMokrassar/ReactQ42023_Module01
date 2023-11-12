@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useContext, useEffect, useState } from 'react';
 import './App.css';
 import Search from './components/Search';
 import SearchPanel from './components/SearchPanel';
@@ -15,21 +15,20 @@ import ErrorThrower from './ErrorThrower';
 import ErrorLogger from './components/ErrorLogger';
 import Navigation from './components/Navigation';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { AppContext, AppContextType } from './AppContext';
 
 export default function App({
-  initialSearchState,
   page,
   count,
   onSetPageAndCount,
 }: {
-  initialSearchState: string;
   page: number;
   count: number;
   onSetPageAndCount: (page: number, count: number) => void;
 }): ReactNode {
   const [isLoading, setIsLoading] = useState(true);
-  const [searchState, setSearchState] = useState(initialSearchState);
-  const [results, setResults] = useState<Array<GithubRepository>>([]);
+  const { search, setSearch, setResults } =
+    useContext<AppContextType>(AppContext);
   const [throwError, setThrowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
@@ -41,23 +40,25 @@ export default function App({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   function doSearch() {
     setIsLoading(true);
-    defaultSearchHistoryWrapper.add(searchState);
-    DefaultGitHubAPI.search(searchState, page, count).then((result) => {
-      const asError = result as GithubErrorResponse;
-      const asResult = result as GithubResponse<GithubRepository>;
-      switch (true) {
-        case asError.message != null:
-          setResults([]);
-          setErrorMessage(asError.message);
-          break;
-        default:
-          setErrorMessage(undefined);
-          setResults(asResult.items);
-          setWholeCountOfItems(asResult.total_count);
-          break;
-      }
-      setIsLoading(false);
-    });
+    defaultSearchHistoryWrapper().setSearch(search);
+    DefaultGitHubAPI()
+      .search(search, page, count)
+      .then((result) => {
+        const asError = result as GithubErrorResponse;
+        const asResult = result as GithubResponse<GithubRepository>;
+        switch (true) {
+          case asError.message != null:
+            setResults(undefined);
+            setErrorMessage(asError.message);
+            break;
+          default:
+            setErrorMessage(undefined);
+            setResults(asResult);
+            setWholeCountOfItems(asResult.total_count);
+            break;
+        }
+        setIsLoading(false);
+      });
   }
 
   const loadingInfoNode = isLoading ? <div>Loading</div> : <></>;
@@ -108,12 +109,12 @@ export default function App({
       <div className="main_container">
         <div className="main_content">
           <SearchPanel onSubmit={doSearch}>
-            <Search state={searchState} onChange={setSearchState} />
+            <Search state={search} onChange={setSearch} />
           </SearchPanel>
           {errorInfoNode}
           {loadingInfoNode}
           <div className={'main_content-results'}>
-            <Results state={results} onItemClicked={setCurrentlyShownObject} />
+            <Results onItemClicked={setCurrentlyShownObject} />
             <Outlet />
           </div>
           <ErrorThrower
