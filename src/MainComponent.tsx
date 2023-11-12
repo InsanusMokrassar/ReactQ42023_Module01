@@ -1,11 +1,11 @@
 import { ReactNode, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import App from './App';
-import { AppContext, initialSearchState } from './AppContext';
+import { AppContext, getInitialSearchState } from './AppContext';
 import { GithubRepository, GithubResponse } from './utils/api/GithubApi';
 
 export default function MainComponent({}: object): ReactNode {
-  const [search, setSearch] = useState(initialSearchState);
+  const [search, setSearch] = useState(getInitialSearchState());
   const [results, setResults] = useState<
     GithubResponse<GithubRepository> | undefined
   >(undefined);

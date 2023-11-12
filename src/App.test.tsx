@@ -261,6 +261,20 @@ describe('App and all related tests', () => {
     expect(defaultSearchHistoryWrapper().getSearch()).toBe('test data');
   });
 
+  it('Check that the component retrieves the value from the local storage upon mounting.', async () => {
+    enableDefaultFetchMocker();
+    const memoryProvider = createMemoryRouter(routerConfig, {
+      initialEntries: ['/'],
+    });
+
+    defaultSearchHistoryWrapper().setSearch('test data');
+    render(<RouterProvider router={memoryProvider} />);
+
+    const input = await screen.findByRole('SearchInput');
+
+    expect(input.getAttribute('value')).toBe('test data');
+  });
+
   afterEach(() => {
     cleanup();
     fetchMocker.mockClear();

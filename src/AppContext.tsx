@@ -2,11 +2,9 @@ import { GithubRepository, GithubResponse } from './utils/api/GithubApi';
 import { createContext } from 'react';
 import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
 
-function getInitialSearchState(): string {
+export function getInitialSearchState(): string {
   return defaultSearchHistoryWrapper().getSearch();
 }
-
-export const initialSearchState = getInitialSearchState();
 
 export type AppContextType = {
   search: string;
@@ -17,7 +15,7 @@ export type AppContextType = {
 
 export const AppContext: React.Context<AppContextType> =
   createContext<AppContextType>({
-    search: initialSearchState,
+    search: getInitialSearchState(),
     setSearch: () => {},
     setResults: () => {},
   });
