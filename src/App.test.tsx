@@ -186,6 +186,62 @@ describe('App and all related tests', () => {
     }
   });
 
+  it('Make sure the component updates URL query parameter when page changes.', async () => {
+    const testTotalCount = 100500;
+    const pages = Math.ceil(testTotalCount / 10);
+    enableDefaultFetchMocker(() =>
+      JSON.stringify({
+        ...testGithubResponseWithGithubRepositories,
+        total_count: testTotalCount,
+      })
+    );
+    const memoryProvider = createMemoryRouter(routerConfig, {
+      initialEntries: ['/'],
+    });
+
+    render(<RouterProvider router={memoryProvider} />);
+
+    const lastButton = await screen.findByRole('navigation_to_last');
+    await userEvent.click(lastButton);
+
+    expect(
+      memoryProvider.state.location.search.indexOf('count=10')
+    ).toBeGreaterThan(-1);
+    expect(
+      memoryProvider.state.location.search.indexOf(`page=${pages}`)
+    ).toBeGreaterThan(-1);
+
+    const firstButton = await screen.findByRole('navigation_to_first');
+    await userEvent.click(firstButton);
+
+    expect(
+      memoryProvider.state.location.search.indexOf('count=10')
+    ).toBeGreaterThan(-1);
+    expect(
+      memoryProvider.state.location.search.indexOf(`page=0`)
+    ).toBeGreaterThan(-1);
+
+    const nextButton = await screen.findByRole('navigation_to_next');
+    await userEvent.click(nextButton);
+
+    expect(
+      memoryProvider.state.location.search.indexOf('count=10')
+    ).toBeGreaterThan(-1);
+    expect(
+      memoryProvider.state.location.search.indexOf(`page=1`)
+    ).toBeGreaterThan(-1);
+
+    const previousButton = await screen.findByRole('navigation_to_previous');
+    await userEvent.click(previousButton);
+
+    expect(
+      memoryProvider.state.location.search.indexOf('count=10')
+    ).toBeGreaterThan(-1);
+    expect(
+      memoryProvider.state.location.search.indexOf(`page=0`)
+    ).toBeGreaterThan(-1);
+  });
+
   afterEach(() => {
     cleanup();
     fetchMocker.mockClear();
