@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import './App.css';
 import Search from './components/Search';
 import SearchPanel from './components/SearchPanel';
@@ -15,7 +15,10 @@ import ErrorThrower from './ErrorThrower';
 import ErrorLogger from './components/ErrorLogger';
 import Navigation from './components/Navigation';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { AppContext, AppContextType } from './AppContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSearch } from './redux/SearchSlice';
+
+import { SearchSliceStateSlice } from './redux/Store';
 
 export default function App({
   page,
@@ -26,9 +29,12 @@ export default function App({
   count: number;
   onSetPageAndCount: (page: number, count: number) => void;
 }): ReactNode {
+  const search = useSelector((state: SearchSliceStateSlice) => {
+    return state.search.search;
+  });
+  const dispatcher = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
-  const { search, setSearch, setResults } =
-    useContext<AppContextType>(AppContext);
+  const [currentSearchInput, setCurrentSearchInput] = useState(search);
   const [throwError, setThrowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
@@ -40,20 +46,20 @@ export default function App({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   function doSearch() {
     setIsLoading(true);
-    defaultSearchHistoryWrapper().setSearch(search);
+    defaultSearchHistoryWrapper().setSearch(currentSearchInput);
     DefaultGitHubAPI()
-      .search(search, page, count)
+      .search(currentSearchInput, page, count)
       .then((result) => {
         const asError = result as GithubErrorResponse;
         const asResult = result as GithubResponse<GithubRepository>;
         switch (true) {
           case asError.message != null:
-            setResults(undefined);
+            // setResults(undefined);
             setErrorMessage(asError.message);
             break;
           default:
             setErrorMessage(undefined);
-            setResults(asResult);
+            // setResults(asResult);
             setWholeCountOfItems(asResult.total_count);
             break;
         }
@@ -108,8 +114,16 @@ export default function App({
     >
       <div className="main_container">
         <div className="main_content">
-          <SearchPanel onSubmit={doSearch}>
-            <Search state={search} onChange={setSearch} />
+          <SearchPanel
+            onSubmit={() => {
+              dispatcher(setSearch({ text: currentSearchInput }));
+              doSearch();
+            }}
+          >
+            <Search
+              state={currentSearchInput}
+              onChange={setCurrentSearchInput}
+            />
           </SearchPanel>
           {errorInfoNode}
           {loadingInfoNode}

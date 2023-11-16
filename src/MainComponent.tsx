@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import App from './App';
 import { AppContext, getInitialSearchState } from './AppContext';
 import { GithubRepository, GithubResponse } from './utils/api/GithubApi';
+import { Provider } from 'react-redux';
+import { store } from './redux/Store';
 
 export default function MainComponent({}: object): ReactNode {
   const [search, setSearch] = useState(getInitialSearchState());
@@ -31,18 +33,20 @@ export default function MainComponent({}: object): ReactNode {
 
   return (
     <AppContext.Provider value={{ search, setSearch, results, setResults }}>
-      <App
-        page={page}
-        count={count}
-        onSetPageAndCount={(page, count) => {
-          setSearchParams((params) => {
-            params.set('page', page.toString());
-            params.set('count', count.toString());
+      <Provider store={store}>
+        <App
+          page={page}
+          count={count}
+          onSetPageAndCount={(page, count) => {
+            setSearchParams((params) => {
+              params.set('page', page.toString());
+              params.set('count', count.toString());
 
-            return params;
-          });
-        }}
-      />
+              return params;
+            });
+          }}
+        />
+      </Provider>
     </AppContext.Provider>
   );
 }
