@@ -6,7 +6,7 @@ import {
   GithubRepository,
   GithubErrorResponse,
   GithubResponse,
-} from './utils/api/GithubApi';
+} from './models/GithubApi';
 import Results from './components/Result';
 import ErrorBoundary from './ErrorBoundary';
 import ErrorThrower from './ErrorThrower';

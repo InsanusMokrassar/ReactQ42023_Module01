@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
-import { GithubErrorResponse, GithubRepository } from '../utils/api/GithubApi';
+import { GithubErrorResponse, GithubRepository } from '../models/GithubApi';
 import GithubRepositoryInfo from './GithubRepositoryInfo';
 import { useOnClickOutside } from 'usehooks-ts';
 import { useDispatch, useSelector } from 'react-redux';

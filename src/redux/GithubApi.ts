@@ -3,7 +3,7 @@ import {
   GithubErrorResponse,
   GithubRepository,
   GithubResponse,
-} from '../utils/api/GithubApi';
+} from '../models/GithubApi';
 
 export type SearchGithubParams = {
   query: string;

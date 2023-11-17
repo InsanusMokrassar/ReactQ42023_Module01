@@ -13,8 +13,7 @@ import { routerConfig } from './Router';
 import createFetchMock, { FetchMock } from 'vitest-fetch-mock';
 import { testGithubResponseWithGithubRepositories } from './components/Result.test';
 import userEvent from '@testing-library/user-event';
-import { GithubRepository } from './utils/api/GithubApi';
-import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
+import { GithubRepository } from './models/GithubApi';
 import { SearchSliceStateSlice, store } from './redux/Store';
 
 export function createDefaultFetchMocker(): [
@@ -274,7 +273,6 @@ describe('App and all related tests', async () => {
       initialEntries: ['/'],
     });
 
-    defaultSearchHistoryWrapper().setSearch('test data');
     render(<RouterProvider router={memoryProvider} />);
 
     const input = await screen.findByRole('SearchInput');

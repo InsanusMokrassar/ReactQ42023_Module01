@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GithubRepository, GithubResponse } from '../utils/api/GithubApi';
+import { GithubRepository, GithubResponse } from '../models/GithubApi';
 import Results from './Result';
 import { testGithubRepositories } from './GithubRepositoryInfo.test';
 import { Provider } from 'react-redux';
