@@ -1,29 +1,17 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
-import {
-  DefaultGitHubAPI,
-  GithubErrorResponse,
-  GithubRepository,
-} from '../utils/api/GithubApi';
+import { GithubErrorResponse, GithubRepository } from '../utils/api/GithubApi';
 import GithubRepositoryInfo from './GithubRepositoryInfo';
 import { useOnClickOutside } from 'usehooks-ts';
 import { useDispatch, useSelector } from 'react-redux';
 import { DetailedInfoSliceStateSlice } from '../redux/Store';
 import { setDetailedInfo } from '../redux/DetailedInfoSlice';
+import { useGetQuery } from '../redux/GithubApi';
+import { skipToken } from '@reduxjs/toolkit/query';
 
 export default function GithubRepositoryLoader(): ReactNode {
   const { username, repo } = useSelector(
     (state: DetailedInfoSliceStateSlice) => state.details
   );
-
-  const [didRequestFor, setDidRequestFor]: [
-    string | undefined,
-    (
-      value:
-        | ((prevState: string | undefined) => string | undefined)
-        | string
-        | undefined
-    ) => void,
-  ] = useState<string | undefined>(undefined);
   const [githubRepo, setGithubRepo]: [
     GithubRepository | undefined,
     (
@@ -61,36 +49,38 @@ export default function GithubRepositoryLoader(): ReactNode {
     unsetCurrentlyShownObject();
   });
 
-  async function doRequest(username: string, repo: string) {
-    setDidRequestFor(usernameRepo);
-    setIsLoading(true);
-    setError(undefined);
-    setGithubRepo(undefined);
-    DefaultGitHubAPI()
-      .get(username, repo)
-      .then((result) => {
-        const asError = result as GithubErrorResponse;
-        const asRepo = result as GithubRepository;
-        if (asError.message) {
-          setError(asError.message);
-        } else {
-          setGithubRepo(asRepo);
-        }
-        setIsLoading(false);
-      });
-  }
-  const usernameRepo = `${username}/${repo}`;
+  const getRepoRequest = useGetQuery(
+    username ? (repo ? { username, repo } : skipToken) : skipToken
+  );
+
   useEffect(() => {
     if (
-      username != undefined &&
-      repo != undefined &&
-      didRequestFor != usernameRepo
+      getRepoRequest.isLoading ||
+      getRepoRequest.data === undefined ||
+      username == undefined ||
+      repo == undefined
     ) {
-      doRequest(username, repo);
+      return;
     }
-  });
+    if (isLoading != getRepoRequest.isLoading) {
+      setIsLoading(getRepoRequest.isLoading);
+    }
+    const result: GithubRepository | GithubErrorResponse | undefined =
+      getRepoRequest.data;
+
+    const asError = result as GithubErrorResponse;
+    const asRepo = result as GithubRepository;
+    if (asError.message) {
+      setError(asError.message);
+    } else {
+      setGithubRepo(asRepo);
+    }
+  }, [getRepoRequest, isLoading, repo, username]);
 
   if (username == undefined || repo == undefined) {
+    if (githubRepo !== undefined) {
+      setGithubRepo(undefined);
+    }
     return;
   }
 

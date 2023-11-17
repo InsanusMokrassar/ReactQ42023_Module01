@@ -2,10 +2,8 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import './App.css';
 import Search from './components/Search';
 import SearchPanel from './components/SearchPanel';
-import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
 import {
   GithubRepository,
-  DefaultGitHubAPI,
   GithubErrorResponse,
   GithubResponse,
 } from './utils/api/GithubApi';
@@ -20,6 +18,7 @@ import { setItemsPerPage, setSearch } from './redux/SearchSlice';
 import { SearchSliceStateSlice } from './redux/Store';
 import { setDetailedInfo } from './redux/DetailedInfoSlice';
 import GithubRepositoryLoader from './components/GithubRepositoryLoader';
+import { useSearchQuery } from './redux/GithubApi';
 
 export default function App({
   page,
@@ -48,29 +47,37 @@ export default function App({
     number | undefined
   >(undefined);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  function doSearch() {
-    setIsLoading(true);
-    defaultSearchHistoryWrapper().setSearch(currentSearchInput);
-    DefaultGitHubAPI()
-      .search(currentSearchInput, page, count)
-      .then((result) => {
-        const asError = result as GithubErrorResponse;
-        const asResult = result as GithubResponse<GithubRepository>;
-        switch (true) {
-          case asError.message != null:
-            setResults(undefined);
-            setErrorMessage(asError.message);
-            break;
-          default:
-            setErrorMessage(undefined);
-            setResults(asResult);
-            setWholeCountOfItems(asResult.total_count);
-            break;
-        }
-        setIsLoading(false);
-      });
-  }
+  const searchResult = useSearchQuery({
+    query: search,
+    page,
+    count,
+  });
+
+  useEffect(() => {
+    if (isLoading != searchResult.isLoading) {
+      setIsLoading(searchResult.isLoading);
+    }
+    if (searchResult.isLoading || searchResult.data === undefined) {
+      return;
+    }
+    const result:
+      | GithubResponse<GithubRepository>
+      | GithubErrorResponse
+      | undefined = searchResult.data;
+    const asError = result as GithubErrorResponse;
+    const asResult = result as GithubResponse<GithubRepository>;
+    switch (true) {
+      case asError.message != null:
+        setResults(undefined);
+        setErrorMessage(asError.message);
+        break;
+      default:
+        setErrorMessage(undefined);
+        setResults(asResult);
+        setWholeCountOfItems(asResult.total_count);
+        break;
+    }
+  }, [isLoading, searchResult]);
 
   const loadingInfoNode = isLoading ? <div>Loading</div> : <></>;
   const errorInfoNode = errorMessage ? (
@@ -88,9 +95,8 @@ export default function App({
   useEffect((): void => {
     if (latestSearchParams != actualSearchParams) {
       setLatestSearchParams(actualSearchParams);
-      doSearch();
     }
-  }, [actualSearchParams, latestSearchParams, setLatestSearchParams, doSearch]);
+  }, [actualSearchParams, latestSearchParams, setLatestSearchParams]);
 
   const onChangePageAndCount = (page: number, count: number): void => {
     onSetPageAndCount(page);
@@ -123,7 +129,6 @@ export default function App({
           <SearchPanel
             onSubmit={() => {
               dispatcher(setSearch({ text: currentSearchInput }));
-              doSearch();
             }}
           >
             <Search
