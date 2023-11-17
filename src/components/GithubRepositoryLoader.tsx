@@ -3,10 +3,14 @@ import { GithubErrorResponse, GithubRepository } from '../models/GithubApi';
 import GithubRepositoryInfo from './GithubRepositoryInfo';
 import { useOnClickOutside } from 'usehooks-ts';
 import { useDispatch, useSelector } from 'react-redux';
-import { DetailedInfoSliceStateSlice } from '../redux/Store';
+import {
+  DetailedInfoSliceStateSlice,
+  LoadersSliceStateSlice,
+} from '../redux/Store';
 import { setDetailedInfo } from '../redux/DetailedInfoSlice';
 import { useGetQuery } from '../redux/GithubApi';
 import { skipToken } from '@reduxjs/toolkit/query';
+import { setLoading } from '../redux/LoadersSlice';
 
 export default function GithubRepositoryLoader(): ReactNode {
   const { username, repo } = useSelector(
@@ -32,10 +36,9 @@ export default function GithubRepositoryLoader(): ReactNode {
         | undefined
     ) => void,
   ] = useState<string | undefined>(undefined);
-  const [isLoading, setIsLoading]: [
-    boolean,
-    (value: ((prevState: boolean) => boolean) | boolean) => void,
-  ] = useState<boolean>(true);
+  const isLoading = useSelector(
+    (state: LoadersSliceStateSlice) => state.loaders.detailedItemLoading
+  );
 
   const dispatcher = useDispatch();
 
@@ -54,16 +57,15 @@ export default function GithubRepositoryLoader(): ReactNode {
   );
 
   useEffect(() => {
+    const isLoading = getRepoRequest.isLoading || getRepoRequest.isFetching;
+    dispatcher(setLoading({ detailedItemLoading: isLoading }));
     if (
-      getRepoRequest.isLoading ||
+      isLoading ||
       getRepoRequest.data === undefined ||
       username == undefined ||
       repo == undefined
     ) {
       return;
-    }
-    if (isLoading != getRepoRequest.isLoading) {
-      setIsLoading(getRepoRequest.isLoading);
     }
     const result: GithubRepository | GithubErrorResponse | undefined =
       getRepoRequest.data;
@@ -75,7 +77,8 @@ export default function GithubRepositoryLoader(): ReactNode {
     } else {
       setGithubRepo(asRepo);
     }
-  }, [getRepoRequest, isLoading, repo, username]);
+  }, [dispatcher, getRepoRequest, isLoading, repo, username]);
+  console.log(isLoading);
 
   if (username == undefined || repo == undefined) {
     if (githubRepo !== undefined) {
@@ -85,7 +88,17 @@ export default function GithubRepositoryLoader(): ReactNode {
   }
 
   return (
-    <div role={`github_repository_details_loader/${username}/${repo}`}>
+    <div
+      role={`github_repository_details_loader/${username}/${repo}`}
+      ref={outletRef}
+    >
+      {isLoading ? (
+        <div role={'github_repository_details_loader_loading'}>
+          {`Loading of ${username}/${repo}`}
+        </div>
+      ) : (
+        <></>
+      )}
       <button
         role={'github_repository_details_loader_close'}
         onClick={unsetCurrentlyShownObject}
@@ -93,24 +106,13 @@ export default function GithubRepositoryLoader(): ReactNode {
         Close
       </button>
       {error ? (
-        <div ref={outletRef}>
+        <div>
           Error in loading of repo {`${username}/${repo}`}: {`"${error}"`}
         </div>
       ) : (
         <></>
       )}
-      {githubRepo ? (
-        <GithubRepositoryInfo info={githubRepo} outletRef={outletRef} />
-      ) : (
-        <></>
-      )}
-      {isLoading ? (
-        <div role={'github_repository_details_loader_loading'} ref={outletRef}>
-          Loading of {`${username}/${repo}`}
-        </div>
-      ) : (
-        <></>
-      )}
+      {githubRepo ? <GithubRepositoryInfo info={githubRepo} /> : <></>}
     </div>
   );
 }

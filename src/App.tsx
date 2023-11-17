@@ -15,10 +15,11 @@ import Navigation from './components/Navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { setItemsPerPage, setSearch } from './redux/SearchSlice';
 
-import { SearchSliceStateSlice } from './redux/Store';
+import { LoadersSliceStateSlice, SearchSliceStateSlice } from './redux/Store';
 import { setDetailedInfo } from './redux/DetailedInfoSlice';
 import GithubRepositoryLoader from './components/GithubRepositoryLoader';
 import { useSearchQuery } from './redux/GithubApi';
+import { setLoading } from './redux/LoadersSlice';
 
 export default function App({
   page,
@@ -34,7 +35,9 @@ export default function App({
     return state.search.itemsPerPage;
   });
   const dispatcher = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
+  const isLoading = useSelector(
+    (state: LoadersSliceStateSlice) => state.loaders.itemsLoading
+  );
   const [results, setResults] = useState<
     undefined | GithubResponse<GithubRepository>
   >();
@@ -54,10 +57,9 @@ export default function App({
   });
 
   useEffect(() => {
-    if (isLoading != searchResult.isLoading) {
-      setIsLoading(searchResult.isLoading);
-    }
-    if (searchResult.isLoading || searchResult.data === undefined) {
+    const isLoading = searchResult.isLoading || searchResult.isFetching;
+    dispatcher(setLoading({ itemsLoading: isLoading }));
+    if (isLoading || searchResult.data === undefined) {
       return;
     }
     const result:
@@ -77,7 +79,7 @@ export default function App({
         setWholeCountOfItems(asResult.total_count);
         break;
     }
-  }, [isLoading, searchResult]);
+  }, [dispatcher, isLoading, searchResult]);
 
   const loadingInfoNode = isLoading ? <div>Loading</div> : <></>;
   const errorInfoNode = errorMessage ? (
