@@ -15,7 +15,7 @@ import ErrorThrower from './ErrorThrower';
 import ErrorLogger from './components/ErrorLogger';
 import Navigation from './components/Navigation';
 import { useDispatch, useSelector } from 'react-redux';
-import { setSearch } from './redux/SearchSlice';
+import { setItemsPerPage, setSearch } from './redux/SearchSlice';
 
 import { SearchSliceStateSlice } from './redux/Store';
 import { setDetailedInfo } from './redux/DetailedInfoSlice';
@@ -23,15 +23,16 @@ import GithubRepositoryLoader from './components/GithubRepositoryLoader';
 
 export default function App({
   page,
-  count,
   onSetPageAndCount,
 }: {
   page: number;
-  count: number;
-  onSetPageAndCount: (page: number, count: number) => void;
+  onSetPageAndCount: (page: number) => void;
 }): ReactNode {
   const search = useSelector((state: SearchSliceStateSlice) => {
     return state.search.search;
+  });
+  const count = useSelector((state: SearchSliceStateSlice) => {
+    return state.search.itemsPerPage;
   });
   const dispatcher = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
@@ -82,17 +83,18 @@ export default function App({
     <></>
   );
 
-  const [requireSearch, setRequireSearch] = useState(true);
+  const [latestSearchParams, setLatestSearchParams] = useState('');
+  const actualSearchParams = `${search}?page=${page}&count=${count}`;
   useEffect((): void => {
-    if (requireSearch) {
-      setRequireSearch(false);
+    if (latestSearchParams != actualSearchParams) {
+      setLatestSearchParams(actualSearchParams);
       doSearch();
     }
-  }, [requireSearch, setRequireSearch, doSearch]);
+  }, [actualSearchParams, latestSearchParams, setLatestSearchParams, doSearch]);
 
   const onChangePageAndCount = (page: number, count: number): void => {
-    setRequireSearch(true);
-    onSetPageAndCount(page, count);
+    onSetPageAndCount(page);
+    dispatcher(setItemsPerPage({ count: count }));
   };
 
   async function resetError(throwError: boolean) {

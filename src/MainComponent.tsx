@@ -14,23 +14,12 @@ export default function MainComponent({}: object): ReactNode {
     }
   }
 
-  const countString = searchParams.get('count');
-  let count = 10;
-  if (countString != null && !isNaN(parseInt(countString))) {
-    count = parseInt(countString);
-    if (count < 1) {
-      count = 1;
-    }
-  }
-
   return (
     <App
       page={page}
-      count={count}
-      onSetPageAndCount={(page, count) => {
+      onSetPageAndCount={(page) => {
         setSearchParams((params) => {
           params.set('page', page.toString());
-          params.set('count', count.toString());
 
           return params;
         });
