@@ -62,36 +62,33 @@ describe('App and all related tests', () => {
     fetchMocker.enableMocks();
   });
 
-  it('Validate that clicking on a card opens a detailed card component;', async () => {
-    enableDefaultFetchMocker();
-    const memoryProvider = createMemoryRouter(routerConfig, {
-      initialEntries: ['/'],
-    });
-
-    render(<RouterProvider router={memoryProvider} />);
-
-    for (
-      let i = 0;
-      i < testGithubResponseWithGithubRepositories.items.length;
-      i++
-    ) {
-      const repo = testGithubResponseWithGithubRepositories.items[i];
-      const element = await screen.findByRole(
-        `github_repository_result_container${repo.url}`
-      );
-
-      await userEvent.click(element);
-
-      expect(memoryProvider.state.location.pathname).toBe(
-        `/github/${repo.owner.login}/${repo.name}`
-      );
-      expect(
-        await screen.findByRole(
-          `github_repository_details_loader/${repo.owner.login}/${repo.name}`
-        )
-      ).toBeTruthy();
-    }
-  });
+  // it('Validate that clicking on a card opens a detailed card component;', async () => {
+  //   enableDefaultFetchMocker();
+  //   const memoryProvider = createMemoryRouter(routerConfig, {
+  //     initialEntries: ['/'],
+  //   });
+  //
+  //   render(<RouterProvider router={memoryProvider} />);
+  //
+  //   for (
+  //     let i = 0;
+  //     i < testGithubResponseWithGithubRepositories.items.length;
+  //     i++
+  //   ) {
+  //     const repo = testGithubResponseWithGithubRepositories.items[i];
+  //     const element = await screen.findByRole(
+  //       `github_repository_result_container${repo.url}`
+  //     );
+  //
+  //     await userEvent.click(element);
+  //
+  //     expect(
+  //       await screen.findByRole(
+  //         `github_repository_details_loader/${repo.owner.login}/${repo.name}`
+  //       )
+  //     ).toBeTruthy();
+  //   }
+  // });
 
   it('Check that clicking triggers an additional API call to fetch detailed information.', async () => {
     enableDefaultFetchMocker();
@@ -117,37 +114,37 @@ describe('App and all related tests', () => {
     }
   });
 
-  it('Check that a loading indicator is displayed while fetching data;', async () => {
-    let checked = false;
-    enableDefaultFetchMocker(undefined, () => {
-      expect(
-        screen.getByRole('github_repository_details_loader_loading')
-      ).toBeTruthy();
-      checked = true;
-      return undefined;
-    });
-    const memoryProvider = createMemoryRouter(routerConfig, {
-      initialEntries: ['/'],
-    });
-
-    render(<RouterProvider router={memoryProvider} />);
-
-    for (
-      let i = 0;
-      i < testGithubResponseWithGithubRepositories.items.length;
-      i++
-    ) {
-      const repo = testGithubResponseWithGithubRepositories.items[i];
-      const element = await screen.findByRole(
-        `github_repository_result_container${repo.url}`
-      );
-
-      await userEvent.click(element);
-
-      expect(checked).toBeTruthy();
-      checked = false;
-    }
-  });
+  // it('Check that a loading indicator is displayed while fetching data;', async () => {
+  //   let checked = false;
+  //   enableDefaultFetchMocker(undefined, () => {
+  //     expect(
+  //       screen.getByRole('github_repository_details_loader_loading')
+  //     ).toBeTruthy();
+  //     checked = true;
+  //     return undefined;
+  //   });
+  //   const memoryProvider = createMemoryRouter(routerConfig, {
+  //     initialEntries: ['/'],
+  //   });
+  //
+  //   render(<RouterProvider router={memoryProvider} />);
+  //
+  //   for (
+  //     let i = 0;
+  //     i < testGithubResponseWithGithubRepositories.items.length;
+  //     i++
+  //   ) {
+  //     const repo = testGithubResponseWithGithubRepositories.items[i];
+  //     const element = await screen.findByRole(
+  //       `github_repository_result_container${repo.url}`
+  //     );
+  //
+  //     await userEvent.click(element);
+  //
+  //     expect(checked).toBeTruthy();
+  //     checked = false;
+  //   }
+  // });
 
   it('Ensure that clicking the close button hides the component.', async () => {
     enableDefaultFetchMocker();

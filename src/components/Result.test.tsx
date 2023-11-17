@@ -25,7 +25,10 @@ describe('Result and Results tests', async () => {
     };
     render(
       <Provider store={store}>
-        <Results onItemClicked={onStateChange} />
+        <Results
+          results={testGithubResponseWithGithubRepositories}
+          onItemClicked={onStateChange}
+        />
       </Provider>
     );
 
@@ -66,7 +69,10 @@ describe('Result and Results tests', async () => {
   it('Empty results shown correctly', async () => {
     render(
       <Provider store={store}>
-        <Results onItemClicked={() => {}} />
+        <Results
+          results={{ items: [], total_count: 0 }}
+          onItemClicked={() => {}}
+        />
       </Provider>
     );
 
