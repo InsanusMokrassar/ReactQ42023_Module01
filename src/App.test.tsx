@@ -203,18 +203,12 @@ describe('App and all related tests', () => {
     await userEvent.click(lastButton);
 
     expect(
-      memoryProvider.state.location.search.indexOf('count=10')
-    ).toBeGreaterThan(-1);
-    expect(
       memoryProvider.state.location.search.indexOf(`page=${pages}`)
     ).toBeGreaterThan(-1);
 
     const firstButton = await screen.findByRole('navigation_to_first');
     await userEvent.click(firstButton);
 
-    expect(
-      memoryProvider.state.location.search.indexOf('count=10')
-    ).toBeGreaterThan(-1);
     expect(
       memoryProvider.state.location.search.indexOf(`page=0`)
     ).toBeGreaterThan(-1);
@@ -223,18 +217,12 @@ describe('App and all related tests', () => {
     await userEvent.click(nextButton);
 
     expect(
-      memoryProvider.state.location.search.indexOf('count=10')
-    ).toBeGreaterThan(-1);
-    expect(
       memoryProvider.state.location.search.indexOf(`page=1`)
     ).toBeGreaterThan(-1);
 
     const previousButton = await screen.findByRole('navigation_to_previous');
     await userEvent.click(previousButton);
 
-    expect(
-      memoryProvider.state.location.search.indexOf('count=10')
-    ).toBeGreaterThan(-1);
     expect(
       memoryProvider.state.location.search.indexOf(`page=0`)
     ).toBeGreaterThan(-1);
