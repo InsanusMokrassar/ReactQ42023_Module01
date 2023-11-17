@@ -14,11 +14,12 @@ import ErrorBoundary from './ErrorBoundary';
 import ErrorThrower from './ErrorThrower';
 import ErrorLogger from './components/ErrorLogger';
 import Navigation from './components/Navigation';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { setSearch } from './redux/SearchSlice';
 
 import { SearchSliceStateSlice } from './redux/Store';
+import { setDetailedInfo } from './redux/DetailedInfoSlice';
+import GithubRepositoryLoader from './components/GithubRepositoryLoader';
 
 export default function App({
   page,
@@ -34,6 +35,9 @@ export default function App({
   });
   const dispatcher = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
+  const [results, setResults] = useState<
+    undefined | GithubResponse<GithubRepository>
+  >();
   const [currentSearchInput, setCurrentSearchInput] = useState(search);
   const [throwError, setThrowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
@@ -54,12 +58,12 @@ export default function App({
         const asResult = result as GithubResponse<GithubRepository>;
         switch (true) {
           case asError.message != null:
-            // setResults(undefined);
+            setResults(undefined);
             setErrorMessage(asError.message);
             break;
           default:
             setErrorMessage(undefined);
-            // setResults(asResult);
+            setResults(asResult);
             setWholeCountOfItems(asResult.total_count);
             break;
         }
@@ -95,14 +99,14 @@ export default function App({
     requestAnimationFrame(() => setThrowError(throwError));
   }
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
   function setCurrentlyShownObject(repo: GithubRepository) {
-    navigate({
-      pathname: `/github/${repo.owner.login}/${repo.name}`,
-      search: location.search,
-    });
+    dispatcher(
+      setDetailedInfo({ username: repo.owner.login, repo: repo.name })
+    );
+    // navigate({
+    //   pathname: `/github/${repo.owner.login}/${repo.name}`,
+    //   search: location.search,
+    // });
   }
 
   return (
@@ -128,8 +132,11 @@ export default function App({
           {errorInfoNode}
           {loadingInfoNode}
           <div className={'main_content-results'}>
-            <Results onItemClicked={setCurrentlyShownObject} />
-            <Outlet />
+            <Results
+              results={results}
+              onItemClicked={setCurrentlyShownObject}
+            />
+            <GithubRepositoryLoader />
           </div>
           <ErrorThrower
             throwError={throwError}

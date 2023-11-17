@@ -1,26 +1,19 @@
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import {
-  Location,
-  NavigateFunction,
-  useLocation,
-  useNavigate,
-  useParams,
-} from 'react-router-dom';
-import {
   DefaultGitHubAPI,
   GithubErrorResponse,
   GithubRepository,
 } from '../utils/api/GithubApi';
 import GithubRepositoryInfo from './GithubRepositoryInfo';
 import { useOnClickOutside } from 'usehooks-ts';
+import { useDispatch, useSelector } from 'react-redux';
+import { DetailedInfoSliceStateSlice } from '../redux/Store';
+import { setDetailedInfo } from '../redux/DetailedInfoSlice';
 
 export default function GithubRepositoryLoader(): ReactNode {
-  const {
-    username,
-    repo,
-  }: Readonly<
-    Partial<{ username: string | undefined; repo: string | undefined }>
-  > = useParams<{ username: string; repo: string }>();
+  const { username, repo } = useSelector(
+    (state: DetailedInfoSliceStateSlice) => state.details
+  );
 
   const [didRequestFor, setDidRequestFor]: [
     string | undefined,
@@ -56,11 +49,10 @@ export default function GithubRepositoryLoader(): ReactNode {
     (value: ((prevState: boolean) => boolean) | boolean) => void,
   ] = useState<boolean>(true);
 
-  const navigate: NavigateFunction = useNavigate();
-  const location: Location = useLocation();
+  const dispatcher = useDispatch();
 
   function unsetCurrentlyShownObject() {
-    navigate({ pathname: '/', search: location.search });
+    dispatcher(setDetailedInfo({ username: undefined, repo: undefined }));
   }
 
   const outletRef: React.RefObject<HTMLDivElement> =
@@ -98,21 +90,8 @@ export default function GithubRepositoryLoader(): ReactNode {
     }
   });
 
-  if (username === undefined) {
-    return (
-      <span>
-        Unable to show info about the repo when username is not available
-      </span>
-    );
-  }
-
-  if (repo === undefined) {
-    return (
-      <span>
-        Unable to show info about the repo of user {username} when repo is not
-        available
-      </span>
-    );
+  if (username == undefined || repo == undefined) {
+    return;
   }
 
   return (

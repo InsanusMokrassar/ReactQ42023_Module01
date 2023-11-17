@@ -2,9 +2,10 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GithubRepository, GithubResponse } from '../utils/api/GithubApi';
-import { AppContext } from '../AppContext';
 import Results from './Result';
 import { testGithubRepositories } from './GithubRepositoryInfo.test';
+import { Provider } from 'react-redux';
+import { store } from '../redux/Store';
 
 export const testGithubResponseWithGithubRepositories: GithubResponse<GithubRepository> =
   {
@@ -23,16 +24,9 @@ describe('Result and Results tests', async () => {
       latestClickedRepo = repo;
     };
     render(
-      <AppContext.Provider
-        value={{
-          search: '',
-          setSearch: () => {},
-          results: testGithubResponseWithGithubRepositories,
-          setResults: () => {},
-        }}
-      >
+      <Provider store={store}>
         <Results onItemClicked={onStateChange} />
-      </AppContext.Provider>
+      </Provider>
     );
 
     await screen.findByRole('github_repository_results_container');
@@ -71,19 +65,9 @@ describe('Result and Results tests', async () => {
   });
   it('Empty results shown correctly', async () => {
     render(
-      <AppContext.Provider
-        value={{
-          search: '',
-          setSearch: () => {},
-          results: {
-            items: [],
-            total_count: 0,
-          },
-          setResults: () => {},
-        }}
-      >
+      <Provider store={store}>
         <Results onItemClicked={() => {}} />
-      </AppContext.Provider>
+      </Provider>
     );
 
     await screen.findByRole('github_repository_results_container');
