@@ -3,11 +3,18 @@ import MainComponent from './MainComponent';
 import GithubRepositoryLoader from './components/GithubRepositoryLoader';
 import NotFound from './NotFound';
 import React from 'react';
+import { Provider } from 'react-redux';
+import { store } from './redux/Store';
 
 export const routerConfig = [
   {
     path: '/',
-    element: <MainComponent />,
+    element: (
+      <Provider store={store}>
+        {' '}
+        <MainComponent />
+      </Provider>
+    ),
     children: [
       {
         path: '/github/:username/:repo',

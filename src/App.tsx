@@ -1,34 +1,47 @@
-import React, { ReactNode, useContext, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import './App.css';
 import Search from './components/Search';
 import SearchPanel from './components/SearchPanel';
-import { defaultSearchHistoryWrapper } from './utils/SearchHistoryWrapper';
 import {
   GithubRepository,
-  DefaultGitHubAPI,
   GithubErrorResponse,
   GithubResponse,
-} from './utils/api/GithubApi';
+} from './models/GithubApi';
 import Results from './components/Result';
 import ErrorBoundary from './ErrorBoundary';
 import ErrorThrower from './ErrorThrower';
 import ErrorLogger from './components/ErrorLogger';
 import Navigation from './components/Navigation';
-import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { AppContext, AppContextType } from './AppContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { setItemsPerPage, setSearch } from './redux/SearchSlice';
+
+import { LoadersSliceStateSlice, SearchSliceStateSlice } from './redux/Store';
+import { setDetailedInfo } from './redux/DetailedInfoSlice';
+import GithubRepositoryLoader from './components/GithubRepositoryLoader';
+import { useSearchQuery } from './redux/GithubApi';
+import { setLoading } from './redux/LoadersSlice';
 
 export default function App({
   page,
-  count,
   onSetPageAndCount,
 }: {
   page: number;
-  count: number;
-  onSetPageAndCount: (page: number, count: number) => void;
+  onSetPageAndCount: (page: number) => void;
 }): ReactNode {
-  const [isLoading, setIsLoading] = useState(true);
-  const { search, setSearch, setResults } =
-    useContext<AppContextType>(AppContext);
+  const search = useSelector((state: SearchSliceStateSlice) => {
+    return state.search.search;
+  });
+  const count = useSelector((state: SearchSliceStateSlice) => {
+    return state.search.itemsPerPage;
+  });
+  const dispatcher = useDispatch();
+  const isLoading = useSelector(
+    (state: LoadersSliceStateSlice) => state.loaders.itemsLoading
+  );
+  const [results, setResults] = useState<
+    undefined | GithubResponse<GithubRepository>
+  >();
+  const [currentSearchInput, setCurrentSearchInput] = useState(search);
   const [throwError, setThrowError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | undefined>(
     undefined
@@ -37,29 +50,36 @@ export default function App({
     number | undefined
   >(undefined);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  function doSearch() {
-    setIsLoading(true);
-    defaultSearchHistoryWrapper().setSearch(search);
-    DefaultGitHubAPI()
-      .search(search, page, count)
-      .then((result) => {
-        const asError = result as GithubErrorResponse;
-        const asResult = result as GithubResponse<GithubRepository>;
-        switch (true) {
-          case asError.message != null:
-            setResults(undefined);
-            setErrorMessage(asError.message);
-            break;
-          default:
-            setErrorMessage(undefined);
-            setResults(asResult);
-            setWholeCountOfItems(asResult.total_count);
-            break;
-        }
-        setIsLoading(false);
-      });
-  }
+  const searchResult = useSearchQuery({
+    query: search,
+    page,
+    count,
+  });
+
+  useEffect(() => {
+    const isLoading = searchResult.isLoading || searchResult.isFetching;
+    dispatcher(setLoading({ itemsLoading: isLoading }));
+    if (isLoading || searchResult.data === undefined) {
+      return;
+    }
+    const result:
+      | GithubResponse<GithubRepository>
+      | GithubErrorResponse
+      | undefined = searchResult.data;
+    const asError = result as GithubErrorResponse;
+    const asResult = result as GithubResponse<GithubRepository>;
+    switch (true) {
+      case asError.message != null:
+        setResults(undefined);
+        setErrorMessage(asError.message);
+        break;
+      default:
+        setErrorMessage(undefined);
+        setResults(asResult);
+        setWholeCountOfItems(asResult.total_count);
+        break;
+    }
+  }, [dispatcher, isLoading, searchResult]);
 
   const loadingInfoNode = isLoading ? <div>Loading</div> : <></>;
   const errorInfoNode = errorMessage ? (
@@ -72,31 +92,27 @@ export default function App({
     <></>
   );
 
-  const [requireSearch, setRequireSearch] = useState(true);
+  const [latestSearchParams, setLatestSearchParams] = useState('');
+  const actualSearchParams = `${search}?page=${page}&count=${count}`;
   useEffect((): void => {
-    if (requireSearch) {
-      setRequireSearch(false);
-      doSearch();
+    if (latestSearchParams != actualSearchParams) {
+      setLatestSearchParams(actualSearchParams);
     }
-  }, [requireSearch, setRequireSearch, doSearch]);
+  }, [actualSearchParams, latestSearchParams, setLatestSearchParams]);
 
   const onChangePageAndCount = (page: number, count: number): void => {
-    setRequireSearch(true);
-    onSetPageAndCount(page, count);
+    onSetPageAndCount(page);
+    dispatcher(setItemsPerPage({ count: count }));
   };
 
   async function resetError(throwError: boolean) {
     requestAnimationFrame(() => setThrowError(throwError));
   }
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
   function setCurrentlyShownObject(repo: GithubRepository) {
-    navigate({
-      pathname: `/github/${repo.owner.login}/${repo.name}`,
-      search: location.search,
-    });
+    dispatcher(
+      setDetailedInfo({ username: repo.owner.login, repo: repo.name })
+    );
   }
 
   return (
@@ -108,14 +124,24 @@ export default function App({
     >
       <div className="main_container">
         <div className="main_content">
-          <SearchPanel onSubmit={doSearch}>
-            <Search state={search} onChange={setSearch} />
+          <SearchPanel
+            onSubmit={() => {
+              dispatcher(setSearch({ text: currentSearchInput }));
+            }}
+          >
+            <Search
+              state={currentSearchInput}
+              onChange={setCurrentSearchInput}
+            />
           </SearchPanel>
           {errorInfoNode}
           {loadingInfoNode}
           <div className={'main_content-results'}>
-            <Results onItemClicked={setCurrentlyShownObject} />
-            <Outlet />
+            <Results
+              results={results}
+              onItemClicked={setCurrentlyShownObject}
+            />
+            <GithubRepositoryLoader />
           </div>
           <ErrorThrower
             throwError={throwError}

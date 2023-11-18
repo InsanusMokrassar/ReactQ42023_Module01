@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GithubRepository, GithubResponse } from '../utils/api/GithubApi';
-import { AppContext } from '../AppContext';
+import { GithubRepository, GithubResponse } from '../models/GithubApi';
 import Results from './Result';
 import { testGithubRepositories } from './GithubRepositoryInfo.test';
+import { Provider } from 'react-redux';
+import { store } from '../redux/Store';
 
 export const testGithubResponseWithGithubRepositories: GithubResponse<GithubRepository> =
   {
@@ -23,16 +24,12 @@ describe('Result and Results tests', async () => {
       latestClickedRepo = repo;
     };
     render(
-      <AppContext.Provider
-        value={{
-          search: '',
-          setSearch: () => {},
-          results: testGithubResponseWithGithubRepositories,
-          setResults: () => {},
-        }}
-      >
-        <Results onItemClicked={onStateChange} />
-      </AppContext.Provider>
+      <Provider store={store}>
+        <Results
+          results={testGithubResponseWithGithubRepositories}
+          onItemClicked={onStateChange}
+        />
+      </Provider>
     );
 
     await screen.findByRole('github_repository_results_container');
@@ -71,19 +68,12 @@ describe('Result and Results tests', async () => {
   });
   it('Empty results shown correctly', async () => {
     render(
-      <AppContext.Provider
-        value={{
-          search: '',
-          setSearch: () => {},
-          results: {
-            items: [],
-            total_count: 0,
-          },
-          setResults: () => {},
-        }}
-      >
-        <Results onItemClicked={() => {}} />
-      </AppContext.Provider>
+      <Provider store={store}>
+        <Results
+          results={{ items: [], total_count: 0 }}
+          onItemClicked={() => {}}
+        />
+      </Provider>
     );
 
     await screen.findByRole('github_repository_results_container');

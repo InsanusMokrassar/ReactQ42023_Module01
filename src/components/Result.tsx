@@ -1,7 +1,6 @@
-import React, { ReactNode, useContext } from 'react';
-import { GithubRepository } from '../utils/api/GithubApi';
+import React, { ReactNode } from 'react';
+import { GithubRepository, GithubResponse } from '../models/GithubApi';
 import './Result.css';
-import { AppContext, AppContextType } from '../AppContext';
 
 export function Result({
   state,
@@ -15,7 +14,7 @@ export function Result({
       key={state.url}
       className={'github_repository_result_container'}
       onClick={(e) => {
-        e.stopPropagation(); // prevent propagation to already opened github repo loader
+        e.stopPropagation();
         onClick();
       }}
       role={`github_repository_result_container${state.url}`}
@@ -28,11 +27,12 @@ export function Result({
 }
 
 export default function Results({
+  results,
   onItemClicked,
 }: {
+  results?: GithubResponse<GithubRepository>;
   onItemClicked: (repo: GithubRepository) => void;
 }): ReactNode {
-  const { results } = useContext<AppContextType>(AppContext);
   return (
     <div
       role={'github_repository_results_container'}

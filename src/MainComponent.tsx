@@ -1,14 +1,8 @@
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import App from './App';
-import { AppContext, getInitialSearchState } from './AppContext';
-import { GithubRepository, GithubResponse } from './utils/api/GithubApi';
 
 export default function MainComponent({}: object): ReactNode {
-  const [search, setSearch] = useState(getInitialSearchState());
-  const [results, setResults] = useState<
-    GithubResponse<GithubRepository> | undefined
-  >(undefined);
   const [searchParams, setSearchParams] = useSearchParams();
 
   const pageString = searchParams.get('page');
@@ -20,29 +14,16 @@ export default function MainComponent({}: object): ReactNode {
     }
   }
 
-  const countString = searchParams.get('count');
-  let count = 10;
-  if (countString != null && !isNaN(parseInt(countString))) {
-    count = parseInt(countString);
-    if (count < 1) {
-      count = 1;
-    }
-  }
-
   return (
-    <AppContext.Provider value={{ search, setSearch, results, setResults }}>
-      <App
-        page={page}
-        count={count}
-        onSetPageAndCount={(page, count) => {
-          setSearchParams((params) => {
-            params.set('page', page.toString());
-            params.set('count', count.toString());
+    <App
+      page={page}
+      onSetPageAndCount={(page) => {
+        setSearchParams((params) => {
+          params.set('page', page.toString());
 
-            return params;
-          });
-        }}
-      />
-    </AppContext.Provider>
+          return params;
+        });
+      }}
+    />
   );
 }

@@ -20,7 +20,6 @@ export default class ErrorBoundary extends Component<
   }
 
   static getDerivedStateFromError(error: Error) {
-    // Update state so the next render will show the fallback UI.
     ErrorBoundary.LatestError = error;
     return { hasError: true };
   }
@@ -32,7 +31,6 @@ export default class ErrorBoundary extends Component<
 
   render() {
     if (this.state.hasError || ErrorBoundary.LatestError !== undefined) {
-      // You can render any custom fallback UI
       return (
         <>
           <div>{this.props.fallback()}</div>
