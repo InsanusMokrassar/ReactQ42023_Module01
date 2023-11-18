@@ -7,9 +7,9 @@ export default function ErrorLogger({}: object): ReactNode {
   } else {
     return (
       <div>
-        <p>{ErrorBoundary.LatestError.name}</p>
-        <p>{ErrorBoundary.LatestError.message}</p>
-        <p>{ErrorBoundary.LatestError.stack}</p>
+        <p role={'error_logger_name'}>{ErrorBoundary.LatestError.name}</p>
+        <p role={'error_logger_message'}>{ErrorBoundary.LatestError.message}</p>
+        <p role={'error_logger_stack'}>{ErrorBoundary.LatestError.stack}</p>
       </div>
     );
   }

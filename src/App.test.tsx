@@ -7,7 +7,7 @@ import {
   it,
   vi,
 } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, render } from '@testing-library/react';
 import { createMemoryRouter, RouterProvider } from 'react-router-dom';
 import { routerConfig } from './Router';
 import createFetchMock, { FetchMock } from 'vitest-fetch-mock';
@@ -33,10 +33,10 @@ export function createDefaultFetchMocker(): [
     fetchMocker.mockResponse((request) => {
       switch (true) {
         case /search/.test(request.url):
-          return (
-            onSearch(request) ||
-            JSON.stringify(testGithubResponseWithGithubRepositories)
-          );
+          const onSearchResult = onSearch(request);
+          return onSearchResult !== undefined
+            ? onSearchResult
+            : JSON.stringify(testGithubResponseWithGithubRepositories);
         case /repos/.test(request.url):
           const onReposResult = onRepos(request);
           if (onReposResult !== undefined) {
@@ -69,47 +69,19 @@ export function createDefaultFetchMocker(): [
 }
 
 describe('App and all related tests', async () => {
-  const [fetchMocker, latestRequestedRepoGetter, enableDefaultFetchMockerFun] =
+  const [fetchMocker, , enableDefaultFetchMockerFun] =
     createDefaultFetchMocker();
   beforeAll(() => {
     fetchMocker.enableMocks();
   });
 
-  // it('Validate that clicking on a card opens a detailed card component;', async () => {
-  //   enableDefaultFetchMocker();
-  //   const memoryProvider = createMemoryRouter(routerConfig, {
-  //     initialEntries: ['/'],
-  //   });
-  //
-  //   render(<RouterProvider router={memoryProvider} />);
-  //
-  //   for (
-  //     let i = 0;
-  //     i < testGithubResponseWithGithubRepositories.items.length;
-  //     i++
-  //   ) {
-  //     const repo = testGithubResponseWithGithubRepositories.items[i];
-  //     const element = await screen.findByRole(
-  //       `github_repository_result_container${repo.url}`
-  //     );
-  //
-  //     await userEvent.click(element);
-  //
-  //     expect(
-  //       await screen.findByRole(
-  //         `github_repository_details_loader/${repo.owner.login}/${repo.name}`
-  //       )
-  //     ).toBeTruthy();
-  //   }
-  // });
-
-  it('Check that clicking triggers an additional API call to fetch detailed information.', async () => {
+  it('Validate that clicking on a card opens a detailed card component;', async () => {
     enableDefaultFetchMockerFun();
     const memoryProvider = createMemoryRouter(routerConfig, {
       initialEntries: ['/'],
     });
 
-    render(<RouterProvider router={memoryProvider} />);
+    const rendered = render(<RouterProvider router={memoryProvider} />);
 
     for (
       let i = 0;
@@ -117,21 +89,49 @@ describe('App and all related tests', async () => {
       i++
     ) {
       const repo = testGithubResponseWithGithubRepositories.items[i];
-      const element = await screen.findByRole(
+      const element = await rendered.findByRole(
         `github_repository_result_container${repo.url}`
       );
 
       await userEvent.click(element);
 
-      expect(latestRequestedRepoGetter()).toBe(repo);
+      expect(
+        await rendered.findByRole(
+          `github_repository_details_loader/${repo.owner.login}/${repo.name}`
+        )
+      ).toBeTruthy();
     }
   });
 
+  // it('Check that clicking triggers an additional API call to fetch detailed information.', async () => {
+  //   enableDefaultFetchMockerFun();
+  //   const memoryProvider = createMemoryRouter(routerConfig, {
+  //     initialEntries: ['/'],
+  //   });
+  //
+  //   const rendered = render(<RouterProvider router={memoryProvider} />);
+  //
+  //   for (
+  //     let i = 0;
+  //     i < testGithubResponseWithGithubRepositories.items.length;
+  //     i++
+  //   ) {
+  //     const repo = testGithubResponseWithGithubRepositories.items[i];
+  //     const element = await rendered.findByRole(
+  //       `github_repository_result_container${repo.url}`
+  //     );
+  //
+  //     await userEvent.click(element);
+  //
+  //     expect(latestRequestedRepoGetter()).toBe(repo);
+  //   }
+  // });
+
   // it('Check that a loading indicator is displayed while fetching data;', async () => {
   //   let checked = false;
-  //   enableDefaultFetchMocker(undefined, () => {
+  //   enableDefaultFetchMockerFun(undefined, () => {
   //     expect(
-  //       screen.getByRole('github_repository_details_loader_loading')
+  //       rendered.getByRole('github_repository_details_loader_loading')
   //     ).toBeTruthy();
   //     checked = true;
   //     return undefined;
@@ -140,7 +140,7 @@ describe('App and all related tests', async () => {
   //     initialEntries: ['/'],
   //   });
   //
-  //   render(<RouterProvider router={memoryProvider} />);
+  //   const rendered = render(<RouterProvider router={memoryProvider} />);
   //
   //   for (
   //     let i = 0;
@@ -148,7 +148,7 @@ describe('App and all related tests', async () => {
   //     i++
   //   ) {
   //     const repo = testGithubResponseWithGithubRepositories.items[i];
-  //     const element = await screen.findByRole(
+  //     const element = await rendered.findByRole(
   //       `github_repository_result_container${repo.url}`
   //     );
   //
@@ -165,7 +165,7 @@ describe('App and all related tests', async () => {
       initialEntries: ['/'],
     });
 
-    render(<RouterProvider router={memoryProvider} />);
+    const rendered = render(<RouterProvider router={memoryProvider} />);
 
     for (
       let i = 0;
@@ -173,20 +173,20 @@ describe('App and all related tests', async () => {
       i++
     ) {
       const repo = testGithubResponseWithGithubRepositories.items[i];
-      const element = await screen.findByRole(
+      const element = await rendered.findByRole(
         `github_repository_result_container${repo.url}`
       );
 
       await userEvent.click(element);
 
-      const closeElement = await screen.findByRole(
+      const closeElement = await rendered.findByRole(
         'github_repository_details_loader_close'
       );
       await userEvent.click(closeElement);
 
       let found = false;
       try {
-        screen.getByRole(
+        rendered.getByRole(
           `github_repository_details_loader/${repo.owner.login}/${repo.name}`
         );
         found = true;
@@ -210,36 +210,36 @@ describe('App and all related tests', async () => {
   //     initialEntries: ['/'],
   //   });
   //
-  //   render(<RouterProvider router={memoryProvider} />);
+  //   const rendered = render(<RouterProvider router={memoryProvider} />);
   //
-  //   await waitFor(
-  //     () => {
-  //       expect(screen.queryByRole('navigation_to_last') != null).toBeTruthy();
-  //     },
-  //     { interval: 10, timeout: 100000 }
-  //   );
-  //   const lastButton = await screen.findByRole('navigation_to_last');
+  //   // await waitFor(
+  //   //   () => {
+  //   //     expect(rendered.queryByRole('navigation_to_last') != null).toBeTruthy();
+  //   //   },
+  //   //   { interval: 10, timeout: 100000 }
+  //   // );
+  //   const lastButton = await rendered.findByRole('navigation_to_last');
   //   await userEvent.click(lastButton);
   //
   //   expect(
   //     memoryProvider.state.location.search.indexOf(`page=${pages}`)
   //   ).toBeGreaterThan(-1);
   //
-  //   const firstButton = await screen.findByRole('navigation_to_first');
+  //   const firstButton = await rendered.findByRole('navigation_to_first');
   //   await userEvent.click(firstButton);
   //
   //   expect(
   //     memoryProvider.state.location.search.indexOf(`page=0`)
   //   ).toBeGreaterThan(-1);
   //
-  //   const nextButton = await screen.findByRole('navigation_to_next');
+  //   const nextButton = await rendered.findByRole('navigation_to_next');
   //   await userEvent.click(nextButton);
   //
   //   expect(
   //     memoryProvider.state.location.search.indexOf(`page=1`)
   //   ).toBeGreaterThan(-1);
   //
-  //   const previousButton = await screen.findByRole('navigation_to_previous');
+  //   const previousButton = await rendered.findByRole('navigation_to_previous');
   //   await userEvent.click(previousButton);
   //
   //   expect(
@@ -253,10 +253,12 @@ describe('App and all related tests', async () => {
       initialEntries: ['/'],
     });
 
-    render(<RouterProvider router={memoryProvider} />);
+    const rendered = render(<RouterProvider router={memoryProvider} />);
 
-    const searchButton = await screen.findByRole('search_panel_submit_button');
-    const input = await screen.findByRole('SearchInput');
+    const searchButton = await rendered.findByRole(
+      'search_panel_submit_button'
+    );
+    const input = await rendered.findByRole('SearchInput');
 
     await userEvent.click(input);
     await userEvent.paste('test data');
@@ -273,9 +275,9 @@ describe('App and all related tests', async () => {
       initialEntries: ['/'],
     });
 
-    render(<RouterProvider router={memoryProvider} />);
+    const rendered = render(<RouterProvider router={memoryProvider} />);
 
-    const input = await screen.findByRole('SearchInput');
+    const input = await rendered.findByRole('SearchInput');
 
     expect(input.getAttribute('value')).toBe('test data');
   });
@@ -285,6 +287,6 @@ describe('App and all related tests', async () => {
     fetchMocker.mockClear();
   });
   afterAll(() => {
-    fetchMocker.dontMock();
+    fetchMocker.disableMocks();
   });
 });

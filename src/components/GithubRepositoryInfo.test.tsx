@@ -2,13 +2,11 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import { GithubRepository } from '../models/GithubApi';
 import GithubRepositoryInfo from './GithubRepositoryInfo';
-import { useRef } from 'react';
 
 function FakeContainer({ info }: { info: GithubRepository }) {
-  const reference = useRef<HTMLDivElement>(null);
   return (
     <>
-      <GithubRepositoryInfo info={info} outletRef={reference} />
+      <GithubRepositoryInfo info={info} />
     </>
   );
 }

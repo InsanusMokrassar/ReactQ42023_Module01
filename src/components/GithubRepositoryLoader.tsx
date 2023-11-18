@@ -78,7 +78,6 @@ export default function GithubRepositoryLoader(): ReactNode {
       setGithubRepo(asRepo);
     }
   }, [dispatcher, getRepoRequest, isLoading, repo, username]);
-  console.log(isLoading);
 
   if (username == undefined || repo == undefined) {
     if (githubRepo !== undefined) {
