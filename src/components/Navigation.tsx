@@ -69,6 +69,7 @@ export default function Navigation({
       <span>
         <select
           value={count}
+          role={'navigation_count_select'}
           onChange={(event) => onSetPage(0, parseInt(event.target.value))}
         >
           {navigationCountsVariants.map((variant) => (

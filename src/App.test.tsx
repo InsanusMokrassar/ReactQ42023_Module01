@@ -197,57 +197,7 @@ describe('App and all related tests', async () => {
     }
   });
 
-  // it('Make sure the component updates URL query parameter when page changes.', async () => {
-  //   const testTotalCount = 100500;
-  //   const pages = Math.ceil(testTotalCount / 10);
-  //   enableDefaultFetchMockerFun(() =>
-  //     JSON.stringify({
-  //       ...testGithubResponseWithGithubRepositories,
-  //       total_count: testTotalCount,
-  //     })
-  //   );
-  //   const memoryProvider = createMemoryRouter(routerConfig, {
-  //     initialEntries: ['/'],
-  //   });
-  //
-  //   const rendered = render(<RouterProvider router={memoryProvider} />);
-  //
-  //   // await waitFor(
-  //   //   () => {
-  //   //     expect(rendered.queryByRole('navigation_to_last') != null).toBeTruthy();
-  //   //   },
-  //   //   { interval: 10, timeout: 100000 }
-  //   // );
-  //   const lastButton = await rendered.findByRole('navigation_to_last');
-  //   await userEvent.click(lastButton);
-  //
-  //   expect(
-  //     memoryProvider.state.location.search.indexOf(`page=${pages}`)
-  //   ).toBeGreaterThan(-1);
-  //
-  //   const firstButton = await rendered.findByRole('navigation_to_first');
-  //   await userEvent.click(firstButton);
-  //
-  //   expect(
-  //     memoryProvider.state.location.search.indexOf(`page=0`)
-  //   ).toBeGreaterThan(-1);
-  //
-  //   const nextButton = await rendered.findByRole('navigation_to_next');
-  //   await userEvent.click(nextButton);
-  //
-  //   expect(
-  //     memoryProvider.state.location.search.indexOf(`page=1`)
-  //   ).toBeGreaterThan(-1);
-  //
-  //   const previousButton = await rendered.findByRole('navigation_to_previous');
-  //   await userEvent.click(previousButton);
-  //
-  //   expect(
-  //     memoryProvider.state.location.search.indexOf(`page=0`)
-  //   ).toBeGreaterThan(-1);
-  // });
-
-  it('Verify that clicking the Search button saves the entered value to the local storage;', async () => {
+  it('Verify that clicking the Search button saves the entered value to the react store;', async () => {
     enableDefaultFetchMockerFun();
     const memoryProvider = createMemoryRouter(routerConfig, {
       initialEntries: ['/'],
@@ -267,6 +217,31 @@ describe('App and all related tests', async () => {
     expect((store.getState() as SearchSliceStateSlice).search.search).toBe(
       'test data'
     );
+  });
+
+  it('Verify that changing of count per page saves the entered value to the react store;', async () => {
+    enableDefaultFetchMockerFun();
+    const memoryProvider = createMemoryRouter(routerConfig, {
+      initialEntries: ['/'],
+    });
+
+    const rendered = render(<RouterProvider router={memoryProvider} />);
+
+    const input = (await rendered.findByRole(
+      'navigation_count_select'
+    )) as HTMLInputElement;
+
+    for (let i = 0; i < input.children.length; i++) {
+      const child = input.children.item(i);
+      if (child instanceof HTMLOptionElement) {
+        // input.value = child.value;
+        await userEvent.selectOptions(input, child);
+        const storeValue = (store.getState() as SearchSliceStateSlice).search
+          .itemsPerPage;
+        expect(input.value).toBe(child.value);
+        expect(storeValue).toBe(parseInt(child.value));
+      }
+    }
   });
 
   it('Check that the component retrieves the value from the local storage upon mounting.', async () => {
