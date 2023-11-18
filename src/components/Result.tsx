@@ -14,7 +14,7 @@ export function Result({
       key={state.url}
       className={'github_repository_result_container'}
       onClick={(e) => {
-        e.stopPropagation(); // prevent propagation to already opened github repo loader
+        e.stopPropagation();
         onClick();
       }}
       role={`github_repository_result_container${state.url}`}

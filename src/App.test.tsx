@@ -103,62 +103,6 @@ describe('App and all related tests', async () => {
     }
   });
 
-  // it('Check that clicking triggers an additional API call to fetch detailed information.', async () => {
-  //   enableDefaultFetchMockerFun();
-  //   const memoryProvider = createMemoryRouter(routerConfig, {
-  //     initialEntries: ['/'],
-  //   });
-  //
-  //   const rendered = render(<RouterProvider router={memoryProvider} />);
-  //
-  //   for (
-  //     let i = 0;
-  //     i < testGithubResponseWithGithubRepositories.items.length;
-  //     i++
-  //   ) {
-  //     const repo = testGithubResponseWithGithubRepositories.items[i];
-  //     const element = await rendered.findByRole(
-  //       `github_repository_result_container${repo.url}`
-  //     );
-  //
-  //     await userEvent.click(element);
-  //
-  //     expect(latestRequestedRepoGetter()).toBe(repo);
-  //   }
-  // });
-
-  // it('Check that a loading indicator is displayed while fetching data;', async () => {
-  //   let checked = false;
-  //   enableDefaultFetchMockerFun(undefined, () => {
-  //     expect(
-  //       rendered.getByRole('github_repository_details_loader_loading')
-  //     ).toBeTruthy();
-  //     checked = true;
-  //     return undefined;
-  //   });
-  //   const memoryProvider = createMemoryRouter(routerConfig, {
-  //     initialEntries: ['/'],
-  //   });
-  //
-  //   const rendered = render(<RouterProvider router={memoryProvider} />);
-  //
-  //   for (
-  //     let i = 0;
-  //     i < testGithubResponseWithGithubRepositories.items.length;
-  //     i++
-  //   ) {
-  //     const repo = testGithubResponseWithGithubRepositories.items[i];
-  //     const element = await rendered.findByRole(
-  //       `github_repository_result_container${repo.url}`
-  //     );
-  //
-  //     await userEvent.click(element);
-  //
-  //     expect(checked).toBeTruthy();
-  //     checked = false;
-  //   }
-  // });
-
   it('Ensure that clicking the close button hides the component.', async () => {
     enableDefaultFetchMockerFun();
     const memoryProvider = createMemoryRouter(routerConfig, {
@@ -234,7 +178,6 @@ describe('App and all related tests', async () => {
     for (let i = 0; i < input.children.length; i++) {
       const child = input.children.item(i);
       if (child instanceof HTMLOptionElement) {
-        // input.value = child.value;
         await userEvent.selectOptions(input, child);
         const storeValue = (store.getState() as SearchSliceStateSlice).search
           .itemsPerPage;

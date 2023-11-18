@@ -113,10 +113,6 @@ export default function App({
     dispatcher(
       setDetailedInfo({ username: repo.owner.login, repo: repo.name })
     );
-    // navigate({
-    //   pathname: `/github/${repo.owner.login}/${repo.name}`,
-    //   search: location.search,
-    // });
   }
 
   return (

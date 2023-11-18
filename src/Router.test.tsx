@@ -10,7 +10,7 @@ describe('All tests related to router work', () => {
     value: {
       href: url,
     },
-    writable: true, // possibility to override
+    writable: true,
   });
   afterEach(() => {
     cleanup();
