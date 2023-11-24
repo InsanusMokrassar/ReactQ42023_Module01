@@ -18,7 +18,7 @@ import { setItemsPerPage, setSearch } from './redux/SearchSlice';
 import { LoadersSliceStateSlice, SearchSliceStateSlice } from './redux/Store';
 import { setDetailedInfo } from './redux/DetailedInfoSlice';
 import GithubRepositoryLoader from './components/GithubRepositoryLoader';
-import { useSearchQuery } from './redux/GithubApi';
+import { useSearchQuery } from './redux/ServerApi';
 import { setLoading } from './redux/LoadersSlice';
 
 export default function App({

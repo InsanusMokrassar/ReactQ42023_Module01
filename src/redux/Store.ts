@@ -4,7 +4,7 @@ import {
   detailedInfoSliceReducer,
   DetailedInfoSliceState,
 } from './DetailedInfoSlice';
-import { githubApi } from './GithubApi';
+import { serverApi } from './ServerApi';
 import { loadersSliceReducer, LoadersSliceState } from './LoadersSlice';
 
 export interface SearchSliceStateSlice {
@@ -24,8 +24,8 @@ export const store = configureStore({
     search: searchSliceReducer,
     details: detailedInfoSliceReducer,
     loaders: loadersSliceReducer,
-    [githubApi.reducerPath]: githubApi.reducer,
+    [serverApi.reducerPath]: serverApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(githubApi.middleware),
+    getDefaultMiddleware().concat(serverApi.middleware),
 });

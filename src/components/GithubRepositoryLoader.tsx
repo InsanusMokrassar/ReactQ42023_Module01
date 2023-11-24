@@ -8,7 +8,7 @@ import {
   LoadersSliceStateSlice,
 } from '../redux/Store';
 import { setDetailedInfo } from '../redux/DetailedInfoSlice';
-import { useGetQuery } from '../redux/GithubApi';
+import { useGetQuery } from '../redux/ServerApi';
 import { skipToken } from '@reduxjs/toolkit/query';
 import { setLoading } from '../redux/LoadersSlice';
 

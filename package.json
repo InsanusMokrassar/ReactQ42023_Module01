@@ -4,13 +4,14 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build && cp netlify.toml dist/",
+    "dev": "next dev",
+    "build": "tsc && next build && cp netlify.toml dist/",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format:fix": "prettier --write src",
     "preview": "vite preview",
     "prepare": "husky install",
     "test": "vitest run",
+    "start": "next start",
     "coverage": "vitest run --coverage"
   },
   "devDependencies": {
@@ -36,6 +37,7 @@
     "jsdom": "^22.1.0",
     "lint-staged": "^15.0.2",
     "msw": "^2.0.8",
+    "next": "^14.0.3",
     "prettier": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

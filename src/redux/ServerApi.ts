@@ -15,8 +15,8 @@ export type GetGithubParams = {
   repo: string;
 };
 
-export const githubApi = createApi({
-  reducerPath: 'githubApi',
+export const serverApi = createApi({
+  reducerPath: 'serverApi',
   baseQuery: fetchBaseQuery({
     baseUrl: 'https://api.github.com/',
   }),
@@ -48,5 +48,5 @@ export const githubApi = createApi({
   }),
 });
 
-export const useSearchQuery = githubApi.useSearchQuery;
-export const useGetQuery = githubApi.useGetQuery;
+export const useSearchQuery = serverApi.useSearchQuery;
+export const useGetQuery = serverApi.useGetQuery;
