@@ -7,11 +7,13 @@ export default function GithubRepositoryLoader({
   repoName,
   repo,
   error,
+  unsetCurrentlyShownObject,
 }: {
   username?: string;
   repoName?: string;
   repo?: GithubRepository;
   error?: GithubErrorResponse;
+  unsetCurrentlyShownObject: () => void;
 }): ReactNode {
   const isLoading =
     username != null &&
@@ -94,12 +96,12 @@ export default function GithubRepositoryLoader({
       ) : (
         <></>
       )}
-      {/*<button*/}
-      {/*  role={'github_repository_details_loader_close'}*/}
-      {/*  onClick={unsetCurrentlyShownObject}*/}
-      {/*>*/}
-      {/*  Close*/}
-      {/*</button>*/}
+      <button
+        role={'github_repository_details_loader_close'}
+        onClick={unsetCurrentlyShownObject}
+      >
+        Close
+      </button>
       {error ? (
         <div>
           Error in loading of repo {`${username}/${repoName}`}:{' '}

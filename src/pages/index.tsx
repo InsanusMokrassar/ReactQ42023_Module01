@@ -93,9 +93,14 @@ export default function Page(
   const [throwError, setThrowError] = useState<boolean>(false);
   const errorMessage = error?.message;
   const wholeCountOfItems = response?.total_count;
-  const [isLoading, setIsLoading] = useState(false);
+  const [responseIsLoading, setResponseIsLoading] = useState(false);
+  const [username, setUsername] = useState(props.details?.request?.username);
+  const [repo, setRepo] = useState(props.details?.request?.repo);
+  const [showDetails, setShowDetails] = useState(
+    username != null && repo != null
+  );
 
-  const loadingInfoNode = isLoading ? <div>Loading</div> : <></>;
+  const loadingInfoNode = responseIsLoading ? <div>Loading</div> : <></>;
   const errorInfoNode = errorMessage ? (
     <label>
       GitHub error message: {'"'}
@@ -106,18 +111,24 @@ export default function Page(
     <></>
   );
 
-  const currentIsLoadingKey = props;
-  const [latestKey, setLatestKey] = useState(currentIsLoadingKey);
+  const responseIsLoadingKey = props.response;
+  const [latestResponseIsLoadingKey, setLatestResponseIsLoadingKey] =
+    useState(responseIsLoadingKey);
   useEffect(() => {
-    if (latestKey === currentIsLoadingKey) {
+    if (latestResponseIsLoadingKey === responseIsLoadingKey) {
       return;
     }
-    setIsLoading(false);
-    setLatestKey(currentIsLoadingKey);
-  }, [setIsLoading, setLatestKey, currentIsLoadingKey, latestKey]);
+    setResponseIsLoading(false);
+    setLatestResponseIsLoadingKey(responseIsLoadingKey);
+  }, [
+    setResponseIsLoading,
+    setLatestResponseIsLoadingKey,
+    responseIsLoadingKey,
+    latestResponseIsLoadingKey,
+  ]);
 
   const onChangePageAndCount = (page: number, count: number): void => {
-    setIsLoading(true);
+    setResponseIsLoading(true);
     router.push(buildUrl(query, page, count));
   };
 
@@ -126,6 +137,9 @@ export default function Page(
   }
 
   function setCurrentlyShownObject(repo: GithubRepository) {
+    setUsername(repo.owner.login);
+    setRepo(repo.name);
+    setShowDetails(true);
     router.push(buildUrl(query, page, count, repo.owner.login, repo.name));
   }
 
@@ -143,7 +157,7 @@ export default function Page(
         <div className="main_content">
           <SearchPanel
             onSubmit={() => {
-              setIsLoading(true);
+              setResponseIsLoading(true);
               router.push(buildUrl(currentSearchInput, page, count));
             }}
           >
@@ -159,12 +173,16 @@ export default function Page(
               results={results}
               onItemClicked={setCurrentlyShownObject}
             />
-            {props.details ? (
+            {showDetails ? (
               <GithubRepositoryLoader
-                username={props.details?.request?.username}
-                repoName={props.details?.request?.repo}
+                username={username}
+                repoName={repo}
                 repo={details != null ? details : undefined}
                 error={detailsError != null ? detailsError : undefined}
+                unsetCurrentlyShownObject={() => {
+                  setShowDetails(false);
+                  router.push(buildUrl(query, page, count));
+                }}
               />
             ) : (
               <></>
