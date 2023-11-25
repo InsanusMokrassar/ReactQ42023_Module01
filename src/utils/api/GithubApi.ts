@@ -1,9 +1,7 @@
 import lazy from '../Lazy';
-import {
-  GithubErrorResponse,
-  GithubRepository,
-  GithubResponse,
-} from '../../models/GithubApi';
+import { GithubRepository } from '../../models/GithubRepository';
+import { GithubErrorResponse } from '../../models/GithubErrorResponse';
+import { GithubResponse } from '../../models/GithubResponse';
 
 export default class GitHubAPI {
   async search(

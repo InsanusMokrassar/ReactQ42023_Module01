@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
-import { GithubRepository, GithubResponse } from '../models/GithubApi';
+import { GithubRepository } from '../models/GithubRepository';
+import { GithubResponse } from '../models/GithubResponse';
 
 export function Result({
   state,

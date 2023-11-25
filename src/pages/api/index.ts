@@ -1,10 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import {
-  GithubErrorResponse,
-  GithubRepository,
-  GithubResponse,
-} from '../../models/GithubApi';
+import { GithubRepository } from '../../models/GithubRepository';
 import { DefaultGitHubAPI } from '../../utils/api/GithubApi';
+import { GithubErrorResponse } from '../../models/GithubErrorResponse';
+import { GithubResponse } from '../../models/GithubResponse';
 
 type MainPageUpdateResponse = {
   repos?: GithubResponse<GithubRepository>;

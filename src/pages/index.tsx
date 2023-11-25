@@ -1,10 +1,6 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from 'next';
 import { ParsedUrlQuery } from 'querystring';
-import {
-  GithubErrorResponse,
-  GithubRepository,
-  GithubResponse,
-} from '../models/GithubApi';
+import { GithubRepository } from '../models/GithubRepository';
 import { DefaultGitHubAPI } from '../utils/api/GithubApi';
 import React, { useEffect, useState } from 'react';
 import ErrorBoundary from '../ErrorBoundary';
@@ -16,6 +12,8 @@ import GithubRepositoryLoader from '../components/GithubRepositoryLoader';
 import ErrorThrower from '../ErrorThrower';
 import Navigation from '../components/Navigation';
 import { useRouter } from 'next/navigation';
+import { GithubErrorResponse } from '../models/GithubErrorResponse';
+import { GithubResponse } from '../models/GithubResponse';
 
 export interface PageRequest extends ParsedUrlQuery {
   page?: string;

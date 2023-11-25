@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
-import { GithubErrorResponse, GithubRepository } from '../models/GithubApi';
+import { GithubRepository } from '../models/GithubRepository';
 import GithubRepositoryInfo from './GithubRepositoryInfo';
+import { GithubErrorResponse } from '../models/GithubErrorResponse';
 
 export default function GithubRepositoryLoader({
   username,

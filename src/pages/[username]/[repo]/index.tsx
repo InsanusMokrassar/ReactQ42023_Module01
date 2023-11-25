@@ -1,8 +1,5 @@
 import type { InferGetServerSidePropsType, GetServerSideProps } from 'next';
-import {
-  GithubErrorResponse,
-  GithubRepository,
-} from '../../../models/GithubApi';
+import { GithubRepository } from '../../../models/GithubRepository';
 import { DefaultGitHubAPI } from '../../../utils/api/GithubApi';
 import {
   PageResponse as IndexPageResponse,
@@ -11,6 +8,7 @@ import {
   DetailsRequest,
   DetailsResponse,
 } from '../../index';
+import { GithubErrorResponse } from '../../../models/GithubErrorResponse';
 
 export const getServerSideProps = (async (context) => {
   const pageRequest = context.params as DetailsRequest;

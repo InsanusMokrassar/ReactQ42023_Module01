@@ -1,6 +1,5 @@
-export type GithubUser = {
-  login: string;
-};
+import { GithubUser } from './GithubUser';
+
 export type GithubRepository = {
   name: string;
   full_name: string;
@@ -11,12 +10,4 @@ export type GithubRepository = {
   forks_count?: number;
   language?: string;
   owner: GithubUser;
-};
-export type GithubResponse<T> = {
-  items: Array<T>;
-  total_count: number;
-};
-export type GithubErrorResponse = {
-  message: string;
-  documentation_url?: string;
 };
