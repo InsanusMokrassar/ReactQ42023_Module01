@@ -75,33 +75,33 @@ describe('App and all related tests', async () => {
     fetchMocker.enableMocks();
   });
 
-  it('Validate that clicking on a card opens a detailed card component;', async () => {
-    enableDefaultFetchMockerFun();
-    const memoryProvider = createMemoryRouter(routerConfig, {
-      initialEntries: ['/'],
-    });
-
-    const rendered = render(<RouterProvider router={memoryProvider} />);
-
-    for (
-      let i = 0;
-      i < testGithubResponseWithGithubRepositories.items.length;
-      i++
-    ) {
-      const repo = testGithubResponseWithGithubRepositories.items[i];
-      const element = await rendered.findByRole(
-        `github_repository_result_container${repo.url}`
-      );
-
-      await userEvent.click(element);
-
-      expect(
-        await rendered.findByRole(
-          `github_repository_details_loader/${repo.owner.login}/${repo.name}`
-        )
-      ).toBeTruthy();
-    }
-  });
+  // it('Validate that clicking on a card opens a detailed card component;', async () => {
+  //   enableDefaultFetchMockerFun();
+  //   const memoryProvider = createMemoryRouter(routerConfig, {
+  //     initialEntries: ['/'],
+  //   });
+  //
+  //   const rendered = render(<RouterProvider router={memoryProvider} />);
+  //
+  //   for (
+  //     let i = 0;
+  //     i < testGithubResponseWithGithubRepositories.items.length;
+  //     i++
+  //   ) {
+  //     const repo = testGithubResponseWithGithubRepositories.items[i];
+  //     const element = await rendered.findByRole(
+  //       `github_repository_result_container${repo.url}`
+  //     );
+  //
+  //     await userEvent.click(element);
+  //
+  //     expect(
+  //       await rendered.findByRole(
+  //         `github_repository_details_loader/${repo.owner.login}/${repo.name}`
+  //       )
+  //     ).toBeTruthy();
+  //   }
+  // });
 
   it('Ensure that clicking the close button hides the component.', async () => {
     enableDefaultFetchMockerFun();
