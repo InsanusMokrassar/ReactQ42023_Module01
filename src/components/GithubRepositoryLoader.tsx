@@ -39,7 +39,7 @@ export default function GithubRepositoryLoader({
         Close
       </button>
       {error ? (
-        <div>
+        <div role={`github_repository_details_loader_error`}>
           Error in loading of repo {`${username}/${repoName}`}:{' '}
           {`"${error.message}"`}
         </div>
