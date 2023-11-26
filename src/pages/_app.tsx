@@ -14,11 +14,3 @@ MyApp.getInitialProps = async (
 
   return { ...ctx };
 };
-
-MyApp.getInitialProps = async (
-  context: AppContext
-): Promise<AppInitialProps> => {
-  const ctx = await App.getInitialProps(context);
-
-  return { ...ctx };
-};
