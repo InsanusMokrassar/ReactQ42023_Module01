@@ -11,7 +11,7 @@ import Results from '../components/Result';
 import GithubRepositoryLoader from '../components/GithubRepositoryLoader';
 import ErrorThrower from '../ErrorThrower';
 import Navigation from '../components/Navigation';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/router';
 import { GithubErrorResponse } from '../models/GithubErrorResponse';
 import { GithubResponse } from '../models/GithubResponse';
 
@@ -91,14 +91,20 @@ export default function Page(
   const [throwError, setThrowError] = useState<boolean>(false);
   const errorMessage = error?.message;
   const wholeCountOfItems = response?.total_count;
-  const [responseIsLoading, setResponseIsLoading] = useState(false);
+  const [responseIsLoading, setResponseIsLoading] = useState(
+    props.response == null && props.error == null
+  );
   const [username, setUsername] = useState(props.details?.request?.username);
   const [repo, setRepo] = useState(props.details?.request?.repo);
   const [showDetails, setShowDetails] = useState(
     username != null && repo != null
   );
 
-  const loadingInfoNode = responseIsLoading ? <div>Loading</div> : <></>;
+  const loadingInfoNode = responseIsLoading ? (
+    <div role={'root_index_loader'}>Loading</div>
+  ) : (
+    <></>
+  );
   const errorInfoNode = errorMessage ? (
     <label>
       GitHub error message: {'"'}
