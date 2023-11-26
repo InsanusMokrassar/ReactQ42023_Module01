@@ -15,7 +15,9 @@ import { testGithubRepositories } from '../components/GithubRepositoryInfo.test'
 import { GetServerSidePropsContext } from 'next';
 import createFetchMock from 'vitest-fetch-mock';
 import { PageRequest } from '../models/pages/PageRequest';
+import userEvent from '@testing-library/user-event';
 
+let calledHrefs: Array<string> = [];
 describe('Root Index', async () => {
   screen.debug();
   const fetchMocker = createFetchMock(vi);
@@ -23,10 +25,13 @@ describe('Root Index', async () => {
     fetchMocker.enableMocks();
   });
   beforeEach(() => {
+    calledHrefs = [];
     vi.mock('next/router', () => {
       const newUseRouter = () => {
         return {
-          push: async () => {},
+          push: async (href: string) => {
+            calledHrefs.push(href);
+          },
         };
       };
 
@@ -68,6 +73,55 @@ describe('Root Index', async () => {
         rendered.getByRole(`github_repository_result_container${repo.url}`)
       ).toBeTruthy();
     });
+  });
+  it('Error is shown', async () => {
+    const testError = { documentation_url: 'sample', message: 'test' };
+    const rendered = render(
+      <Page
+        page={0}
+        count={10}
+        query={'react'}
+        response={null}
+        error={testError}
+      />
+    );
+
+    const infoNode = rendered.getByRole('error_info_node');
+
+    expect(infoNode).toBeTruthy();
+    expect(infoNode.innerHTML).toBe(
+      `GitHub error message: "${testError.message}"`
+    );
+  });
+  it('Repos clicks works properly', async () => {
+    // const routerMock = vi.fn().mockImplementation(useRouter);
+    // routerMock.mockReturnValue(mockedRouter);
+    const rendered = render(
+      <Page
+        page={0}
+        count={10}
+        query={'react'}
+        response={testGithubResponseWithGithubRepositories}
+        error={null}
+      />
+    );
+
+    expect(
+      rendered.getByRole('github_repository_results_container')
+    ).toBeTruthy();
+
+    for (let i = 0; i < testGithubRepositories.length; i++) {
+      const repo = testGithubRepositories[i];
+      const element = rendered.getByRole(
+        `github_repository_result_container${repo.url}`
+      );
+      await userEvent.click(element);
+      expect(
+        calledHrefs.filter((href) =>
+          href.startsWith(`/${repo.owner.login}/${repo.name}`)
+        ).length
+      ).toBe(1);
+    }
   });
   it('Empty message is shown', async () => {
     // const routerMock = vi.fn().mockImplementation(useRouter);

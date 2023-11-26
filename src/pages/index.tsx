@@ -68,7 +68,7 @@ export default function Page(
     <></>
   );
   const errorInfoNode = errorMessage ? (
-    <label>
+    <label role={'error_info_node'}>
       GitHub error message: {'"'}
       {errorMessage}
       {'"'}
