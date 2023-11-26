@@ -9,11 +9,12 @@ import {
   vi,
 } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
-import Page, { getServerSideProps, PageRequest } from './index';
+import Page, { getServerSideProps } from './index';
 import { testGithubResponseWithGithubRepositories } from '../components/Result.test';
 import { testGithubRepositories } from '../components/GithubRepositoryInfo.test';
 import { GetServerSidePropsContext } from 'next';
 import createFetchMock from 'vitest-fetch-mock';
+import { PageRequest } from '../models/pages/PageRequest';
 
 describe('Root Index', async () => {
   screen.debug();

@@ -2,13 +2,13 @@ import type { InferGetServerSidePropsType, GetServerSideProps } from 'next';
 import { GithubRepository } from '../../../models/GithubRepository';
 import { DefaultGitHubAPI } from '../../../utils/api/GithubApi';
 import {
-  PageResponse as IndexPageResponse,
   getServerSideProps as indexGetServerSideProps,
   default as IndexPage,
-  DetailsRequest,
-  DetailsResponse,
 } from '../../index';
 import { GithubErrorResponse } from '../../../models/GithubErrorResponse';
+import { RootPageResponse as IndexPageResponse } from '../../../models/pages/RootPageResponse';
+import { DetailsResponse } from '../../../models/pages/DetailsResponse';
+import { DetailsRequest } from '../../../models/pages/DetailsRequest';
 
 export const getServerSideProps = (async (context) => {
   const pageRequest = context.params as DetailsRequest;

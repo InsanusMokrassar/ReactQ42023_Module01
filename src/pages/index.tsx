@@ -1,5 +1,4 @@
-import type { InferGetServerSidePropsType, GetServerSideProps } from 'next';
-import { ParsedUrlQuery } from 'querystring';
+import type { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { GithubRepository } from '../models/GithubRepository';
 import { DefaultGitHubAPI } from '../utils/api/GithubApi';
 import React, { useEffect, useState } from 'react';
@@ -14,34 +13,9 @@ import Navigation from '../components/Navigation';
 import { useRouter } from 'next/router';
 import { GithubErrorResponse } from '../models/GithubErrorResponse';
 import { GithubResponse } from '../models/GithubResponse';
-
-export interface PageRequest extends ParsedUrlQuery {
-  page?: string;
-  count?: string;
-  query?: string;
-}
-
-export type DetailsRequest = {
-  username: string;
-  repo: string;
-};
-
-export type DetailsResponse = {
-  details: GithubRepository | null;
-  error: GithubErrorResponse | null;
-};
-
-export type PageResponse = {
-  page: number;
-  count: number;
-  query: string;
-  response: GithubResponse<GithubRepository> | null;
-  error: GithubErrorResponse | null;
-  details?: {
-    request: DetailsRequest;
-    response?: DetailsResponse;
-  };
-};
+import { RootPageResponse } from '../models/pages/RootPageResponse';
+import { PageRequest } from '../models/pages/PageRequest';
+import { buildUrl } from '../utils/URLBuilder';
 
 export const getServerSideProps = (async (context) => {
   const queryAsParams = context.query as PageRequest;
@@ -66,23 +40,11 @@ export const getServerSideProps = (async (context) => {
       error: asError.message ? asError : null,
     },
   };
-}) satisfies GetServerSideProps<PageResponse>;
-
-function buildUrl(
-  query: string,
-  page: number,
-  count: number,
-  username?: string,
-  repo?: string
-): string {
-  const prefix = username ? (repo ? `/${username}/${repo}` : '/') : '/';
-  return `${prefix}?query=${encodeURIComponent(
-    query
-  )}&page=${encodeURIComponent(page)}&count=${encodeURIComponent(count)}`;
-}
+}) satisfies GetServerSideProps<RootPageResponse>;
 
 export default function Page(
-  props: InferGetServerSidePropsType<typeof getServerSideProps> & PageResponse
+  props: InferGetServerSidePropsType<typeof getServerSideProps> &
+    RootPageResponse
 ) {
   const { page, count, query, response, error } = props;
   const router = useRouter();
