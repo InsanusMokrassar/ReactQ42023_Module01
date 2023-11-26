@@ -1,6 +1,4 @@
-import React, { ReactNode } from 'react';
-
-let doSkipError = false;
+import React, { ReactNode, useEffect, useState } from 'react';
 
 export default function ErrorThrower({
   throwError,
@@ -9,14 +7,23 @@ export default function ErrorThrower({
   throwError: boolean;
   onSetErrorToThrow: (set: boolean) => void;
 }): ReactNode {
+  const [doSkipError, setDoSkipError] = useState(false);
+  useEffect(() => {
+    switch (true) {
+      case throwError && !doSkipError:
+        setDoSkipError(true);
+        break;
+      case !throwError:
+        setDoSkipError(false);
+        break;
+      default:
+        break;
+    }
+  }, [setDoSkipError, doSkipError, throwError]);
   switch (true) {
     case throwError && !doSkipError:
-      doSkipError = true;
       onSetErrorToThrow(false);
       throw new Error('It is sample error');
-    case !throwError:
-      doSkipError = false;
-      break;
     default:
       break;
   }
@@ -25,6 +32,7 @@ export default function ErrorThrower({
       onClick={() => {
         onSetErrorToThrow(true);
       }}
+      role={'error_thrower_button'}
     >
       Push to force the error
     </button>
