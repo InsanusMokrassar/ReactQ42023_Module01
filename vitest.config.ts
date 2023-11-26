@@ -9,6 +9,10 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
       extension: ['ts', 'tsx'],
       include: ['src'],
+      exclude: [
+        'src/models', // exclude types ts files without any testable functional
+        'src/vite-env.d.ts', // exclude vite env file
+      ],
       all: true,
     },
   },

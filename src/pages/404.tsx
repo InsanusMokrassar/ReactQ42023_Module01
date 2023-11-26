@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-export default function NotFound(): ReactNode {
+export default function Custom404(): ReactNode {
   return (
     <div role={'NotFoundContainer'}>
       Sorry, but this page do not exists in the app. Please, follow to{' '}

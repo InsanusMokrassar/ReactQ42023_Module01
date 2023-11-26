@@ -4,13 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build && cp netlify.toml dist/",
+    "dev": "next dev",
+    "build": "tsc && next build && cp netlify.toml dist/",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format:fix": "prettier --write src",
-    "preview": "vite preview",
     "prepare": "husky install",
     "test": "vitest run",
+    "start": "next start",
     "coverage": "vitest run --coverage"
   },
   "devDependencies": {
@@ -19,7 +19,6 @@
     "@testing-library/user-event": "^14.5.1",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
-    "@types/react-redux": "^7.1.30",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vitejs/plugin-react": "^4.0.3",
@@ -36,10 +35,10 @@
     "jsdom": "^22.1.0",
     "lint-staged": "^15.0.2",
     "msw": "^2.0.8",
+    "next": "^14.0.3",
     "prettier": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-redux": "^8.1.3",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vitest": "^0.34.6",
@@ -50,7 +49,6 @@
     "*.{css,scss}": "prettier --write"
   },
   "dependencies": {
-    "react-router-dom": "^6.18.0",
     "usehooks-ts": "^2.9.1"
   }
 }

@@ -1,4 +1,4 @@
-import { GithubRepository } from '../models/GithubApi';
+import { GithubRepository } from '../models/GithubRepository';
 import React, { ReactNode } from 'react';
 
 export default function GithubRepositoryInfo({

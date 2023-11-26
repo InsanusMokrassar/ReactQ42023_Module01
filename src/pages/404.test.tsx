@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import NotFound from './NotFound';
+import Custom404 from './404';
 
 describe('NotFound tests', async () => {
   screen.debug();
   it('Main test for not found page', async () => {
-    render(<NotFound />);
+    render(<Custom404 />);
 
     await screen.findByRole('NotFoundContainer');
 

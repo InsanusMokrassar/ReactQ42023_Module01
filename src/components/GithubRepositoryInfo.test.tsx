@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
-import { GithubRepository } from '../models/GithubApi';
+import { GithubRepository } from '../models/GithubRepository';
 import GithubRepositoryInfo from './GithubRepositoryInfo';
 
 function FakeContainer({ info }: { info: GithubRepository }) {
