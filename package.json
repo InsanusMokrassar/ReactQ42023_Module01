@@ -34,6 +34,7 @@
     "vite": "^4.4.5"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.3.2",
     "@reduxjs/toolkit": "^1.9.7",
     "react-hook-form": "^7.48.2",
     "react-redux": "^8.1.3",

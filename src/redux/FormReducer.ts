@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { act } from 'react-dom/test-utils';
 
 export enum Gender {
   MALE,
@@ -7,17 +6,20 @@ export enum Gender {
   OTHER,
 }
 
-export type FormsSliceState = {
+export type FormsWithoutPictureSliceState = {
   firstName: string;
   age: number;
   email: string;
   password: string;
   passwordApprove: string;
   gender: Gender;
-  accepted: boolean;
-  picture?: string;
+  accepted: boolean | true;
   country: string;
 };
+
+export type FormsSliceState = {
+  picture?: string;
+} & FormsWithoutPictureSliceState;
 
 export type SetFormAction = {
   payload: FormsSliceState;

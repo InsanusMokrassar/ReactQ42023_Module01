@@ -1,8 +1,8 @@
 import { FormsSliceStateSlice } from '../redux/Store';
 import { useSelector } from 'react-redux';
-import { ReactNode, useState } from 'react';
+import { ReactNode } from 'react';
 import { FormsSliceState } from '../redux/FormReducer';
-import { Outlet } from "react-router-dom";
+import { Outlet } from 'react-router-dom';
 
 export default function Main(): ReactNode {
   const formStateSlice: FormsSliceState = useSelector<
@@ -22,7 +22,13 @@ export default function Main(): ReactNode {
       <div>Gender: {formStateSlice.gender}</div>
       <div>Accepted T&C: {formStateSlice.accepted}</div>
       <div>
-        Image: <img src={formStateSlice.picture} />
+        Image:{' '}
+        <img
+          src={formStateSlice.picture}
+          width={512}
+          height={512}
+          style={{ objectFit: 'contain' }}
+        />
       </div>
       <div>Country: {formStateSlice.country}</div>
 
