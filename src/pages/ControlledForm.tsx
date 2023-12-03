@@ -198,7 +198,9 @@ export default function ControlledForm(): ReactNode {
           {...countriesToAutocomplete.map((country) => (
             <div key={country.code}>
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
                   setValue('country', country.name);
                 }}
               >
