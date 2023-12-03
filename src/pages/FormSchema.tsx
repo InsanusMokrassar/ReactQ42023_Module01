@@ -17,7 +17,32 @@ export const formSchema = object({
     }),
   age: number().integer().min(0).required(),
   email: string().email().required(),
-  password: string().required(),
+  password: string()
+    .test(
+      'Strength requirements',
+      'Password should contains at least 1 number, 1 uppercased letter, 1 lowercased letter and one special character',
+      (value) => {
+        const actualValue = value || '';
+        let containsLowercase = false;
+        let containsUppercase = false;
+        let containsSpecial = false;
+        let containsNumber = false;
+        for (let i = 0; i < actualValue.length; i++) {
+          const char = actualValue.charAt(i);
+          containsLowercase ||= char.toLowerCase() === char;
+          containsUppercase ||= char.toUpperCase() === char;
+          containsSpecial ||= /^[\w\d]/.test(char);
+          containsNumber ||= /\d/.test(char);
+        }
+        return (
+          containsLowercase &&
+          containsUppercase &&
+          containsSpecial &&
+          containsNumber
+        );
+      }
+    )
+    .required(),
   passwordApprove: string()
     .test(
       'Password repetition requirements',
@@ -38,6 +63,7 @@ export const formSchema = object({
         const file = value[0];
         return (
           file &&
+          file.name != null &&
           isValidFileType(file.name.substring(file.name.lastIndexOf('.') + 1))
         );
       }

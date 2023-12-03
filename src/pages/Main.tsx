@@ -15,6 +15,7 @@ export default function Main(): ReactNode {
     <div>
       <span>
         <a href={'/controlled'}>Controlled</a>
+        <a href={'/uncontrolled'}>Uncontrolled</a>
       </span>
       <div>Name: {formStateSlice.firstName}</div>
       <div>Age: {formStateSlice.age}</div>
