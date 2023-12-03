@@ -1,15 +1,15 @@
 import { FormsSliceStateSlice } from '../redux/Store';
 import { useSelector } from 'react-redux';
 import { ReactNode } from 'react';
-import { FormsSliceState } from '../redux/FormReducer';
+import { FormsSliceStates } from '../redux/FormReducer';
 import { Outlet } from 'react-router-dom';
+import { Form } from './Form';
 
 export default function Main(): ReactNode {
-  const formStateSlice: FormsSliceState = useSelector<
+  const formStateSlices: FormsSliceStates = useSelector<
     FormsSliceStateSlice,
-    FormsSliceState
+    FormsSliceStates
   >((state) => state.forms);
-  // const [previousState, setNewState] = useState(formStateSlice);
 
   return (
     <div>
@@ -17,21 +17,9 @@ export default function Main(): ReactNode {
         <a href={'/controlled'}>Controlled</a>
         <a href={'/uncontrolled'}>Uncontrolled</a>
       </span>
-      <div>Name: {formStateSlice.firstName}</div>
-      <div>Age: {formStateSlice.age}</div>
-      <div>EMail: {formStateSlice.email}</div>
-      <div>Gender: {formStateSlice.gender}</div>
-      <div>Accepted T&C: {formStateSlice.accepted}</div>
-      <div>
-        Image:{' '}
-        <img
-          src={formStateSlice.picture}
-          width={512}
-          height={512}
-          style={{ objectFit: 'contain' }}
-        />
-      </div>
-      <div>Country: {formStateSlice.country}</div>
+      {formStateSlices.map((form, i) => (
+        <Form key={`form_${i}`} {...form} />
+      ))}
 
       <Outlet></Outlet>
     </div>

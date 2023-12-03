@@ -1,7 +1,12 @@
 import { CountriesSliceStateSlice, FormsSliceStateSlice } from '../redux/Store';
 import { useDispatch, useSelector } from 'react-redux';
 import { createRef, MouseEvent, ReactNode, RefObject, useState } from 'react';
-import { FormsSliceState, Gender, setForm } from '../redux/FormReducer';
+import {
+  appendForm,
+  DefaultEmptyForm,
+  FormsSliceStates,
+  Gender,
+} from '../redux/FormReducer';
 import { formSchema } from './FormSchema';
 import { CountriesSliceState } from '../redux/CountriesReducer';
 import { Country } from '../Countries';
@@ -9,14 +14,18 @@ import { converterToBase64 } from '../utils/Base64Exporter';
 import { ValidationError } from 'yup';
 
 export default function UncontrolledForm(): ReactNode {
-  const formStateSlice: FormsSliceState = useSelector<
+  const formStateSlices: FormsSliceStates = useSelector<
     FormsSliceStateSlice,
-    FormsSliceState
+    FormsSliceStates
   >((state) => state.forms);
   const countries: CountriesSliceState = useSelector<
     CountriesSliceStateSlice,
     CountriesSliceState
   >((state) => state.countries);
+  const formStateSlice =
+    formStateSlices.length > 0
+      ? formStateSlices[formStateSlices.length - 1]
+      : DefaultEmptyForm;
 
   const firstNameInputRef = createRef<HTMLInputElement>();
   const firstNameErrorRef = createRef<HTMLDivElement>();
@@ -49,7 +58,7 @@ export default function UncontrolledForm(): ReactNode {
     country: countryErrorRef,
   };
 
-  const setFormCallback = setForm;
+  const setFormCallback = appendForm;
   const dispatcher = useDispatch();
 
   const [countriesToAutocomplete, setCountriesToAutocomplete] = useState<

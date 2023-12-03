@@ -2,10 +2,11 @@ import { CountriesSliceStateSlice, FormsSliceStateSlice } from '../redux/Store';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReactNode, useEffect, useState } from 'react';
 import {
-  FormsSliceState,
+  appendForm,
+  DefaultEmptyForm,
+  FormsSliceStates,
   FormsWithoutPictureSliceState,
   Gender,
-  setForm,
 } from '../redux/FormReducer';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,10 +20,14 @@ type PictureAsFile = {
 };
 
 export default function ControlledForm(): ReactNode {
-  const formStateSlice: FormsSliceState = useSelector<
+  const formStateSlices: FormsSliceStates = useSelector<
     FormsSliceStateSlice,
-    FormsSliceState
+    FormsSliceStates
   >((state) => state.forms);
+  const formStateSlice =
+    formStateSlices.length > 0
+      ? formStateSlices[formStateSlices.length - 1]
+      : DefaultEmptyForm;
   const countries: CountriesSliceState = useSelector<
     CountriesSliceStateSlice,
     CountriesSliceState
@@ -39,7 +44,7 @@ export default function ControlledForm(): ReactNode {
     resolver: yupResolver(formSchema),
   });
 
-  const setFormCallback = setForm;
+  const setFormCallback = appendForm;
   const dispatcher = useDispatch();
 
   async function onSubmit(data: FormsWithoutPictureSliceState & PictureAsFile) {

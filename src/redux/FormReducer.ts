@@ -21,38 +21,45 @@ export type FormsSliceState = {
   picture?: string;
 } & FormsWithoutPictureSliceState;
 
+export type FormsSliceStates = Array<FormsSliceState>;
+
 export type SetFormAction = {
   payload: FormsSliceState;
 };
 
+export const DefaultEmptyForm: FormsSliceState = {
+  firstName: 'Unset',
+  age: 0,
+  email: 'unset@unset.unset',
+  password: 'unset',
+  passwordApprove: 'unset',
+  gender: Gender.OTHER,
+  accepted: false,
+  picture: undefined,
+  country: 'Unset',
+};
+
 const formInfoSlice = createSlice({
   name: 'forms',
-  initialState: {
-    firstName: 'Unset',
-    age: 0,
-    email: 'unset@unset.unset',
-    password: 'unset',
-    passwordApprove: 'unset',
-    gender: Gender.OTHER,
-    accepted: false,
-    picture: undefined,
-    country: 'Unset',
-  },
+  initialState: [],
   reducers: {
-    setForm: (state: FormsSliceState, action: SetFormAction) => {
-      state.firstName = action.payload.firstName;
-      state.age = action.payload.age;
-      state.email = action.payload.email;
-      state.password = action.payload.password;
-      state.passwordApprove = action.payload.passwordApprove;
-      state.gender = action.payload.gender;
-      state.accepted = action.payload.accepted;
-      state.picture = action.payload.picture;
-      state.country = action.payload.country;
+    appendForm: (state: Array<FormsSliceState>, action: SetFormAction) => {
+      const newForm: FormsSliceState = {
+        firstName: action.payload.firstName,
+        age: action.payload.age,
+        email: action.payload.email,
+        password: action.payload.password,
+        passwordApprove: action.payload.passwordApprove,
+        gender: action.payload.gender,
+        accepted: action.payload.accepted,
+        picture: action.payload.picture,
+        country: action.payload.country,
+      };
+      state.push(newForm);
     },
   },
 });
 
-export const { setForm } = formInfoSlice.actions;
+export const { appendForm } = formInfoSlice.actions;
 
 export const formInfoSliceReducer = formInfoSlice.reducer;

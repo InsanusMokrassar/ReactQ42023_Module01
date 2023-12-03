@@ -3,7 +3,7 @@ import { formInfoSliceReducer, FormsSliceState } from './FormReducer';
 import { countriesSliceReducer, CountriesSliceState } from './CountriesReducer';
 
 export interface FormsSliceStateSlice {
-  forms: FormsSliceState;
+  forms: Array<FormsSliceState>;
 }
 
 export interface CountriesSliceStateSlice {
