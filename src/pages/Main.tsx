@@ -13,6 +13,7 @@ export default function Main(): ReactNode {
 
   const navigate = useNavigate();
 
+  const formsArray = [...formStateSlices].reverse();
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr' }}>
       <div>
@@ -22,9 +23,17 @@ export default function Main(): ReactNode {
             Uncontrolled
           </button>
         </span>
-        {formStateSlices.map((form, i) => (
-          <Form key={`form_${i}`} {...form} />
-        ))}
+        {formsArray.map((form, i) => {
+          if (i == 0) {
+            return (
+              <div key={`form_${i}`} style={{ backgroundColor: 'darkgray' }}>
+                <Form {...form} />
+              </div>
+            );
+          } else {
+            return <Form key={`form_${i}`} {...form} />;
+          }
+        })}
       </div>
 
       <div>

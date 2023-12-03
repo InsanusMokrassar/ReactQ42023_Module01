@@ -38,7 +38,7 @@ export default function ControlledForm(): ReactNode {
     register,
     handleSubmit,
     watch,
-    formState: { errors },
+    formState: { errors, isValid },
     setValue,
   } = useForm<FormsWithoutPictureSliceState & PictureAsFile>({
     mode: 'onChange',
@@ -210,7 +210,7 @@ export default function ControlledForm(): ReactNode {
           ))}
         </label>
       </div>
-      <input type={'submit'} />
+      <input type={'submit'} disabled={!isValid} />
     </form>
   );
 }
