@@ -31,7 +31,7 @@ export const formSchema = object({
           const char = actualValue.charAt(i);
           containsLowercase ||= char.toLowerCase() === char;
           containsUppercase ||= char.toUpperCase() === char;
-          containsSpecial ||= /^[\w\d]/.test(char);
+          containsSpecial ||= /[^\w\d]/.test(char);
           containsNumber ||= /\d/.test(char);
         }
         return (
