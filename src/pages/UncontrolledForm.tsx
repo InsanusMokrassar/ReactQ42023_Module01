@@ -12,6 +12,7 @@ import { CountriesSliceState } from '../redux/CountriesReducer';
 import { Country } from '../Countries';
 import { converterToBase64 } from '../utils/Base64Exporter';
 import { ValidationError } from 'yup';
+import { useNavigate } from 'react-router-dom';
 
 export default function UncontrolledForm(): ReactNode {
   const formStateSlices: FormsSliceStates = useSelector<
@@ -60,6 +61,7 @@ export default function UncontrolledForm(): ReactNode {
 
   const setFormCallback = appendForm;
   const dispatcher = useDispatch();
+  const navigate = useNavigate();
 
   const [countriesToAutocomplete, setCountriesToAutocomplete] = useState<
     Array<Country>
@@ -120,6 +122,7 @@ export default function UncontrolledForm(): ReactNode {
           picture: await converterToBase64(validationResult.picture[0]),
         })
       );
+      navigate('/');
     } catch (e) {
       if (e instanceof ValidationError) {
         e.inner.forEach((error) => {
@@ -219,7 +222,11 @@ export default function UncontrolledForm(): ReactNode {
       <div>
         <label>
           Accept T&C
-          <input type={'checkbox'} ref={acceptedInputRef} />
+          <input
+            type={'checkbox'}
+            ref={acceptedInputRef}
+            defaultChecked={formStateSlice.accepted}
+          />
           <div ref={acceptedErrorRef}></div>
         </label>
       </div>

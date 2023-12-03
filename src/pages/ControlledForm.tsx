@@ -14,6 +14,7 @@ import { formSchema } from './FormSchema';
 import { CountriesSliceState } from '../redux/CountriesReducer';
 import { Country } from '../Countries';
 import { converterToBase64 } from '../utils/Base64Exporter';
+import { useNavigate } from 'react-router-dom';
 
 type PictureAsFile = {
   picture: FileList;
@@ -46,6 +47,7 @@ export default function ControlledForm(): ReactNode {
 
   const setFormCallback = appendForm;
   const dispatcher = useDispatch();
+  const navigate = useNavigate();
 
   async function onSubmit(data: FormsWithoutPictureSliceState & PictureAsFile) {
     dispatcher(
@@ -54,6 +56,7 @@ export default function ControlledForm(): ReactNode {
         picture: await converterToBase64(data.picture[0]),
       })
     );
+    navigate('/');
   }
 
   const [countriesToAutocomplete, setCountriesToAutocomplete] = useState<
@@ -175,14 +178,22 @@ export default function ControlledForm(): ReactNode {
       <div>
         <label>
           Accept T&C
-          <input type={'checkbox'} {...register('accepted')} />
+          <input
+            type={'checkbox'}
+            {...register('accepted')}
+            defaultChecked={formStateSlice.accepted}
+          />
           {errors.accepted ? <div>{errors.accepted.message}</div> : <div></div>}
         </label>
       </div>
       <div>
         <label>
           Country
-          <input type={'text'} {...register('country')} />
+          <input
+            type={'text'}
+            {...register('country')}
+            defaultValue={formStateSlice.country}
+          />
           {errors.country ? <div>{errors.country.message}</div> : <div></div>}
           {...countriesToAutocomplete.map((country) => (
             <div key={country.code}>
